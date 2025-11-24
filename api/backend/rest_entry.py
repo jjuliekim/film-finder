@@ -11,9 +11,12 @@ from backend.ngos.ngo_routes import ngos
 def create_app():
     app = Flask(__name__)
 
-    # Configure logging
-    # Create logs directory if it doesn't exist
-    setup_logging(app)
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.info('API startup')
+
+    # Configure file logging if needed
+    #   Uncomment the code in the setup_logging function
+    # setup_logging(app) 
 
     # Load environment variables
     # This function reads all the values from inside
@@ -58,32 +61,31 @@ def setup_logging(app):
     Args:
         app: Flask application instance to configure logging for
     """
-    if not os.path.exists('logs'):
-        os.mkdir('logs')
+    # if not os.path.exists('logs'):
+    #     os.mkdir('logs')
 
     ## Set up FILE HANDLER for all levels
-    file_handler = RotatingFileHandler(
-        'logs/api.log',
-        maxBytes=10240,
-        backupCount=10
-    )
-    file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-    ))
+    # file_handler = RotatingFileHandler(
+    #     'logs/api.log',
+    #     maxBytes=10240,
+    #     backupCount=10
+    # )
+    # file_handler.setFormatter(logging.Formatter(
+    #     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    # ))
     
     # Make sure we are capturing all levels of logging into the log files. 
-    file_handler.setLevel(logging.DEBUG)  # Capture all levels in file
-    app.logger.addHandler(file_handler)
+    # file_handler.setLevel(logging.DEBUG)  # Capture all levels in file
+    # app.logger.addHandler(file_handler)
 
-    ## Set up CONSOLE HANDLER for all levels
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s'
-    ))
+    # ## Set up CONSOLE HANDLER for all levels
+    # console_handler = logging.StreamHandler()
+    # console_handler.setFormatter(logging.Formatter(
+    #     '%(asctime)s %(levelname)s: %(message)s'
+    # ))
     # Debug level capture makes sure that all log levels are captured
-    console_handler.setLevel(logging.DEBUG)
-    app.logger.addHandler(console_handler)
-
-    # Set the base logging level to DEBUG to capture everything
-    app.logger.setLevel(logging.DEBUG)
-    app.logger.info('API startup')
+    # console_handler.setLevel(logging.DEBUG)
+    # app.logger.addHandler(console_handler)
+    pass
+    
+    
