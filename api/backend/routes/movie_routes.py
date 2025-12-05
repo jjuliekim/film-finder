@@ -98,7 +98,7 @@ def get_movie_actors(movie_id):
 
         # Get all actors in this movie
         query = """
-        SELECT a.actorID, a.firstName, a.lastName FROM Actors a
+        SELECT * FROM Actors a
         JOIN MovieActors ma ON a.actorID = ma.actorID
         WHERE ma.movieID = %s
         """
@@ -264,13 +264,16 @@ def get_all_directors():
     except Error as e:
         current_app.logger.error(f"Database error in get_all_directors: {str(e)}")
         return jsonify({"error": str(e)}), 500
-      
+
+
 # Get detailed information about a specific director
 # Example: /movie/directors/1
 @movies.route("/directors/<int:director_id>", methods=["GET"])
 def get_director(director_id):
     try:
-        current_app.logger.info(f"Getting get_director request for director_id: {director_id}")
+        current_app.logger.info(
+            f"Getting get_director request for director_id: {director_id}"
+        )
         cursor = db.get_db().cursor()
 
         # Get director details
@@ -285,6 +288,38 @@ def get_director(director_id):
 
     except Error as e:
         current_app.logger.error(f"Database error in get_director: {str(e)}")
-        return jsonify({"error": str(e)}), 500  
-      
-      
+        return jsonify({"error": str(e)}), 500
+
+
+# Get all movies directed by a specific director
+# Example: /movie/directors/1/movies
+@movies.route("/directors/<int:director_id>/movies", methods=["GET"])
+def get_director_movies(director_id):
+    try:
+        current_app.logger.info(
+            f"Getting get_director_movies request for director_id: {director_id}"
+        )
+        cursor = db.get_db().cursor()
+
+        # Check if director exists
+        cursor.execute("SELECT * FROM Directors WHERE directorID = %s", (director_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Director not found"}), 404
+
+        # Get all movies directed by this director
+        query = """
+        SELECT * FROM Movies m
+        JOIN MovieDirectors md ON m.movieID = md.movieID
+        WHERE md.directorID = %s
+        """
+        cursor.execute(query, (director_id,))
+        movies = cursor.fetchall()
+        cursor.close()
+        current_app.logger.info(
+            f"Successfully retrieved movies for director_id: {director_id}"
+        )
+        return jsonify(movies), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_director_movies: {str(e)}")
+        return jsonify({"error": str(e)}), 500
