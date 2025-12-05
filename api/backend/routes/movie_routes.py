@@ -4,27 +4,30 @@ from mysql.connector import Error
 from flask import current_app
 
 # Create a Blueprint for movie routes
-movies = Blueprint("movies", __name__)
+movies = Blueprint("movie", __name__)
+
 
 # Get all movies with optional filtering by year, genre, and duration
-# Example: /movies?year=2016&genre=Action&duration=2
-@movies.route("/", methods=["GET"])
+# Example: /movie/movies?year=2016&genre=Action&duration=2
+@movies.route("/movies", methods=["GET"])
 def get_all_movies():
     try:
-        current_app.logger.info('Starting get_all_movies request')
+        current_app.logger.info("Starting get_all_movies request")
         cursor = db.get_db().cursor()
-        
+
         # Get query parameters for filtering
         year = request.args.get("year")
         genre = request.args.get("genre")
         duration = request.args.get("duration")
-        
-        current_app.logger.debug(f'Query parameters - year: {year}, genre: {genre}, duration: {duration}')
-        
+
+        current_app.logger.debug(
+            f"Query parameters - year: {year}, genre: {genre}, duration: {duration}"
+        )
+
         # Prepare the Base query
         query = "SELECT * FROM Movies m WHERE 1=1"
         params = []
-        
+
         # Add filters if provided
         if year:
             query += " AND Year = %s"
@@ -41,16 +44,40 @@ def get_all_movies():
         if duration:
             query += " AND Duration <= %s"
             params.append(duration)
-            
-        current_app.logger.debug(f'Executing query: {query} with params: {params}')
+
+        current_app.logger.debug(f"Executing query: {query} with params: {params}")
         cursor.execute(query, params)
         movies = cursor.fetchall()
+
+        current_app.logger.info(f"Successfully retrieved {len(movies)} movies")
         cursor.close()
-        
-        current_app.logger.info(f'Successfully retrieved {len(movies)} movies')
         return jsonify(movies), 200
+
     except Error as e:
-        current_app.logger.error(f'Database error in get_all_movies: {str(e)}')
+        current_app.logger.error(f"Database error in get_all_movies: {str(e)}")
         return jsonify({"error": str(e)}), 500
-      
-      
+
+
+# Get detailed information about a specific movie
+# Example: /movie/movies/1
+@movies.route("/movies/<int:movie_id>", methods=["GET"])
+def get_movie(movie_id):
+    try:
+        current_app.logger.info(f"Getting get_movie request for movie_id: {movie_id}")
+        cursor = db.get_db().cursor()
+
+        # Get movie details
+        cursor.execute("SELECT * FROM Movies WHERE movieID = %s", (movie_id,))
+        movie = cursor.fetchone()
+
+        if not movie:
+            return jsonify({"error": "Movie not found"}), 404
+
+        cursor.close()
+        return jsonify(movie), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_movie: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
