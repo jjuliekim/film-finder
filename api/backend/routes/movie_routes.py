@@ -105,7 +105,9 @@ def get_movie_actors(movie_id):
         cursor.execute(query, (movie_id,))
         actors = cursor.fetchall()
         cursor.close()
-        current_app.logger.info(f"Successfully retrieved actors for movie_id: {movie_id}")
+        current_app.logger.info(
+            f"Successfully retrieved actors for movie_id: {movie_id}"
+        )
         return jsonify(actors), 200
 
     except Error as e:
