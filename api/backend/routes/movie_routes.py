@@ -323,3 +323,37 @@ def get_director_movies(director_id):
     except Error as e:
         current_app.logger.error(f"Database error in get_director_movies: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+
+# Get all movies of a specific genre
+# Example: /genres/1/movies
+@movies.route("/genres/<int:genre_id>/movies", methods=["GET"])
+def get_genre_movies(genre_id):
+    try:
+        current_app.logger.info(
+            f"Getting get_genre_movies request for genre_id: {genre_id}"
+        )
+        cursor = db.get_db().cursor()
+
+        # Check if genre exists
+        cursor.execute("SELECT * FROM Genres WHERE genreID = %s", (genre_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Genre not found"}), 404
+
+        # Get all movies in this genre
+        query = """
+        SELECT * FROM Movies m
+        JOIN MovieGenres mg ON m.movieID = mg.movieID
+        WHERE mg.genreID = %s
+        """
+        cursor.execute(query, (genre_id,))
+        movies = cursor.fetchall()
+        cursor.close()
+        current_app.logger.info(
+            f"Successfully retrieved movies for genre_id: {genre_id}"
+        )
+        return jsonify(movies), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_genre_movies: {str(e)}")
+        return jsonify({"error": str(e)}), 500
