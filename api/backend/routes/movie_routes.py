@@ -186,3 +186,105 @@ def get_movie_trailers(movie_id):
 
 
 # have separate /admins and /users routes
+
+
+# Get detailed information about a specific actor
+# Example: /movie/actors/1
+@movies.route("/actors/<int:actor_id>", methods=["GET"])
+def get_actor(actor_id):
+    try:
+        current_app.logger.info(f"Getting get_actor request for actor_id: {actor_id}")
+        cursor = db.get_db().cursor()
+
+        # Get actor details
+        cursor.execute("SELECT * FROM Actors WHERE actorID = %s", (actor_id,))
+        actor = cursor.fetchone()
+
+        if not actor:
+            return jsonify({"error": "Actor not found"}), 404
+
+        cursor.close()
+        return jsonify(actor), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_actor: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Get all movies with a specific actor
+# Example: /movie/actors/1/movies
+@movies.route("/actors/<int:actor_id>/movies", methods=["GET"])
+def get_actor_movies(actor_id):
+    try:
+        current_app.logger.info(
+            f"Getting get_actor_movies request for actor_id: {actor_id}"
+        )
+        cursor = db.get_db().cursor()
+
+        # Check if actor exists
+        cursor.execute("SELECT * FROM Actors WHERE actorID = %s", (actor_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Actor not found"}), 404
+
+        # Get all movies featuring this actor
+        query = """
+        SELECT * FROM Movies m
+        JOIN MovieActors ma ON m.movieID = ma.movieID
+        WHERE ma.actorID = %s
+        """
+        cursor.execute(query, (actor_id,))
+        movies = cursor.fetchall()
+        cursor.close()
+        current_app.logger.info(
+            f"Successfully retrieved movies for actor_id: {actor_id}"
+        )
+        return jsonify(movies), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_actor_movies: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Get details of all directors
+# Example: /movie/directors
+@movies.route("/directors", methods=["GET"])
+def get_all_directors():
+    try:
+        current_app.logger.info("Starting get_all_directors request")
+        cursor = db.get_db().cursor()
+
+        # Get all directors
+        cursor.execute("SELECT * FROM Directors")
+        directors = cursor.fetchall()
+
+        current_app.logger.info(f"Successfully retrieved {len(directors)} directors")
+        cursor.close()
+        return jsonify(directors), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_all_directors: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+      
+# Get detailed information about a specific director
+# Example: /movie/directors/1
+@movies.route("/directors/<int:director_id>", methods=["GET"])
+def get_director(director_id):
+    try:
+        current_app.logger.info(f"Getting get_director request for director_id: {director_id}")
+        cursor = db.get_db().cursor()
+
+        # Get director details
+        cursor.execute("SELECT * FROM Directors WHERE directorID = %s", (director_id,))
+        director = cursor.fetchone()
+
+        if not director:
+            return jsonify({"error": "Director not found"}), 404
+
+        cursor.close()
+        return jsonify(director), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_director: {str(e)}")
+        return jsonify({"error": str(e)}), 500  
+      
+      
