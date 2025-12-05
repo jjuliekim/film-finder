@@ -113,3 +113,39 @@ def get_movie_actors(movie_id):
     except Error as e:
         current_app.logger.error(f"Database error in get_movie_actors: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+
+# Get all directors of a specific movie
+# Example: /movie/movies/1/directors
+@movies.route("/movies/<int:movie_id>/directors", methods=["GET"])
+def get_movie_directors(movie_id):
+    try:
+        current_app.logger.info(
+            f"Getting get_movie_directors request for movie_id: {movie_id}"
+        )
+        cursor = db.get_db().cursor()
+
+        # Check if movie exists
+        cursor.execute("SELECT * FROM Movies WHERE movieID = %s", (movie_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Movie not found"}), 404
+
+        # Get all directors of this movie
+        query = """
+        SELECT d.directorID, d.firstName, d.lastName FROM Directors d
+        JOIN MovieDirectors md ON d.directorID = md.directorID
+        WHERE md.movieID = %s
+        """
+        cursor.execute(query, (movie_id,))
+        directors = cursor.fetchall()
+        cursor.close()
+        current_app.logger.info(
+            f"Successfully retrieved directors for movie_id: {movie_id}"
+        )
+        return jsonify(directors), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_movie_directors: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
