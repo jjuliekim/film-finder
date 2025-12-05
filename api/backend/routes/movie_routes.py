@@ -149,3 +149,40 @@ def get_movie_directors(movie_id):
         return jsonify({"error": str(e)}), 500
 
 
+# Get all trailers for a specific movie
+# Example: /movie/movies/1/trailers
+@movies.route("/movies/<int:movie_id>/trailers", methods=["GET"])
+def get_movie_trailers(movie_id):
+    try:
+        current_app.logger.info(
+            f"Getting get_movie_trailers request for movie_id: {movie_id}"
+        )
+        cursor = db.get_db().cursor()
+
+        # Check if movie exists
+        cursor.execute("SELECT * FROM Movies WHERE movieID = %s", (movie_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Movie not found"}), 404
+
+        # Get all trailers for this movie
+        query = "SELECT * FROM Trailers t WHERE t.movieID = %s"
+        cursor.execute(query, (movie_id,))
+        trailers = cursor.fetchall()
+        cursor.close()
+        current_app.logger.info(
+            f"Successfully retrieved trailers for movie_id: {movie_id}"
+        )
+        return jsonify(trailers), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_movie_trailers: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Get all captions for a specific movie
+# Example: /movie/movies/1/captions
+# @movies.route("/movies/<int:movie_id>/captions", methods=["GET"])
+# def get_movie_captions(movie_id):
+
+
+# have separate /admins and /users routes
