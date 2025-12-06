@@ -185,9 +185,6 @@ def get_movie_trailers(movie_id):
 # def get_movie_captions(movie_id):
 
 
-# have separate /admins and /users routes
-
-
 # Get detailed information about a specific actor
 # Example: /movie/actors/1
 @movies.route("/actors/<int:actor_id>", methods=["GET"])
