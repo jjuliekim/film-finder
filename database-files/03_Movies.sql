@@ -1,3 +1,4 @@
+USE `film-finder`;
 insert into Movies (movieID, title, duration, yearReleased) values (1, '2010: The Year We Make Contact', 1.56, 1989);
 insert into Movies (movieID, title, duration, yearReleased) values (2, 'Cross of Lorraine, The', 1.19, 1966);
 insert into Movies (movieID, title, duration, yearReleased) values (3, 'Foxes', 1.02, 2012);

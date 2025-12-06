@@ -1,3 +1,4 @@
+USE `film-finder`;
 insert into Genres (genreID, name) values (1, 'Mystery');
 insert into Genres (genreID, name) values (2, 'Comedy');
 insert into Genres (genreID, name) values (3, 'Crime');

@@ -84,8 +84,8 @@ def delete_review(review_id):
 
 
 # Get all reviews written by a specific user
-# Example: GET /user/reviews/user/1
-@users.route("/reviews/user/<int:user_id>", methods=["GET"])
+# Example: GET /user/reviews/users/1
+@users.route("/reviews/users/<int:user_id>", methods=["GET"])
 def get_user_reviews(user_id):
     try:
         current_app.logger.info(
@@ -94,7 +94,7 @@ def get_user_reviews(user_id):
         cursor = db.get_db().cursor()
 
         # Check if user exists
-        cursor.execute("SELECT * FROM Users WHERE userID = %s", (user_id,))
+        cursor.execute("SELECT * FROM UserProfiles WHERE userID = %s", (user_id,))
         if not cursor.fetchone():
             return jsonify({"error": "User not found"}), 404
 

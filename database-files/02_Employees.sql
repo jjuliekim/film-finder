@@ -1,3 +1,4 @@
+USE `film-finder`;
 insert into Employees (empID, firstName, lastName, role) values (1, 'Michale', 'Gives', 'Supervisor');
 insert into Employees (empID, firstName, lastName, role) values (2, 'Chloe', 'Parres', 'Admin');
 insert into Employees (empID, firstName, lastName, role) values (3, 'Jayson', 'Linden', 'Project Manager');

@@ -103,7 +103,7 @@ CREATE TABLE AppVersions(
 DROP TABLE IF EXISTS Movies;
 CREATE TABLE Movies(
     movieID INT PRIMARY KEY,
-    yearReleased DATETIME, -- how to show just yr? we havent used YEAR function
+    yearReleased INT, 
     duration INT,
     title VARCHAR(255)
    # FK goes inside Reviews table
