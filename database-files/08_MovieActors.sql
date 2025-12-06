@@ -1,3 +1,4 @@
+USE `film-finder`;
 insert into MovieActors (movieID, actorID) values (1, 18);
 insert into MovieActors (movieID, actorID) values (2, 7);
 insert into MovieActors (movieID, actorID) values (3, 22);

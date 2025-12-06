@@ -1,3 +1,4 @@
+USE `film-finder`;
 insert into Directors (directorID, firstName, lastName) values (1, 'Perla', 'Bewshaw');
 insert into Directors (directorID, firstName, lastName) values (2, 'Dolley', 'Vant');
 insert into Directors (directorID, firstName, lastName) values (3, 'Zeke', 'Ipwell');

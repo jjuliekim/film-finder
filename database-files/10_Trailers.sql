@@ -1,3 +1,4 @@
+USE `film-finder`;
 insert into Trailers (trailerID, movieID, trailerLength) values (1, 3, 2);
 insert into Trailers (trailerID, movieID, trailerLength) values (2, 7, 1);
 insert into Trailers (trailerID, movieID, trailerLength) values (3, 7, 3);
