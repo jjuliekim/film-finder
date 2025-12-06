@@ -145,3 +145,70 @@ def get_movie_reviews(movie_id):
         return jsonify({"error": str(e)}), 500
 
 
+# Create a new list
+# Required fields: userID, listName
+# JSON: {"userID": 1, "listName": "My Favorite Movies" }
+# Example: POST /user/lists with JSON body
+@users.route("/lists", methods=["POST"])
+def create_list():
+    try:
+        current_app.logger.info("Starting create_list request")
+        data = request.get_json()
+
+        # Validate required fields
+        required_fields = ["userID", "listName"]
+        for field in required_fields:
+            if field not in data:
+                current_app.logger.warning(f"Missing required field: {field}")
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        cursor = db.get_db().cursor()
+
+        # Insert new list
+        query = """
+        INSERT INTO Lists (userID, listName)
+        VALUES (%s, %s)
+        """
+        cursor.execute(
+            query,
+            (
+                data["userID"],
+                data["listName"],
+            ),
+        )
+
+        db.get_db().commit()
+        new_list_id = cursor.lastrowid
+        cursor.close()
+
+        current_app.logger.info(f"List created successfully with ID: {new_list_id}")
+        return (
+            jsonify(
+                {"message": "List created successfully", "list_id": new_list_id}
+            ),
+            201,
+        )
+    except Error as e:
+        current_app.logger.error(f"Error creating list: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+      
+
+# Return a specific list
+# Example: /user/lists/1
+@users.route("/lists/<int:list_id>", methods=["GET"])
+def get_list(list_id):
+    try:
+        current_app.logger.info(f"Starting get_list request for ID: {list_id}")
+        cursor = db.get_db().cursor()
+
+        # Get the list
+        query = "SELECT * FROM Lists WHERE listID = %s"
+        cursor.execute(query, (list_id,))
+        list = cursor.fetchone()
+        cursor.close()
+
+        current_app.logger.info(f"Retrieved list with ID: {list_id}")
+        return jsonify(list), 200
+    except Error as e:
+        current_app.logger.error(f"Error retrieving list: {str(e)}")
+        return jsonify({"error": str(e)}), 500
