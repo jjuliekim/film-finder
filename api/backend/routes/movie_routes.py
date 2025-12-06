@@ -181,8 +181,32 @@ def get_movie_trailers(movie_id):
 
 # Get all captions for a specific movie
 # Example: /movie/movies/1/captions
-# @movies.route("/movies/<int:movie_id>/captions", methods=["GET"])
-# def get_movie_captions(movie_id):
+@movies.route("/movies/<int:movie_id>/captions", methods=["GET"])
+def get_movie_captions(movie_id):
+    try:
+        current_app.logger.info(
+            f"Getting get_movie_captions request for movie_id: {movie_id}"
+        )
+        cursor = db.get_db().cursor()
+
+        # Check if movie exists
+        cursor.execute("SELECT * FROM Movies WHERE movieID = %s", (movie_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Movie not found"}), 404
+
+        # Get all captions for this movie
+        query = "SELECT * FROM Captions c WHERE c.movieID = %s"
+        cursor.execute(query, (movie_id,))
+        captions = cursor.fetchall()
+        cursor.close()
+        current_app.logger.info(
+            f"Successfully retrieved captions for movie_id: {movie_id}"
+        )
+        return jsonify(captions), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_movie_captions: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 
 # Get detailed information about a specific actor
