@@ -1,38 +1,10 @@
-'''
-from flask import Blueprint, jsonify, request
-from backend.db_connection import db
-from mysql.connector import Error
-from flask import current_app
-
-# Create a Blueprint for employee routes
-employees = Blueprint("employees", __name__)
-
-
-# Get all movies with optional filtering by year, genre, and duration
-# Example: /movie/movies?year=2016&genre=Action&duration=2
-@employees.route("/employees", methods=["GET"])
-def get_all_employees():
-
-    cursor = db.get_db().cursor()
-    the_query = """
-        SELECT * FROM Employees;
-    """
-
-    cursor.execute(the_query)
-    theData = cursor.fetchall()
-    the_response = make_response(theData)
-    the_response.status_code = 200
-    the_response.mimetype='application/json'
-    return the_response
-
-'''
 from flask import Blueprint, jsonify, request
 from backend.db_connection import db
 from mysql.connector import Error
 from flask import current_app
 
 # Create a Blueprint for movie routes
-employees = Blueprint("employees", __name__)
+employees = Blueprint("employee", __name__)
 
 
 # Get all movies with optional filtering by employee id, first name, last name, and role

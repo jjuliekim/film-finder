@@ -10,6 +10,7 @@ from backend.ngos.ngo_routes import ngos
 from backend.routes.movie_routes import movies
 from backend.routes.user_routes import users
 from backend.routes.employee_routes import employees
+from backend.routes.version_routes import versions
 
 def create_app():
     app = Flask(__name__)
@@ -55,7 +56,8 @@ def create_app():
     app.register_blueprint(ngos, url_prefix="/ngo")
     app.register_blueprint(movies, url_prefix="/movie")
     app.register_blueprint(users, url_prefix="/user")
-    app.register_blueprint(employees, url_prefix='/employee')
+    app.register_blueprint(employees, url_prefix="/employee")
+    app.register_blueprint(versions, url_prefix="/version")
 
     # Don't forget to return the app object
     return app
