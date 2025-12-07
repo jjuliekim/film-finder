@@ -189,13 +189,13 @@ def create_list():
     except Error as e:
         current_app.logger.error(f"Error creating list: {str(e)}")
         return jsonify({"error": str(e)}), 500
-      
-      
+
+
 # Delete a specific list
 # Example: DELETE /user/lists/1
 @users.route("/lists/<int:list_id>", methods=["DELETE"])
 def delete_list(list_id):
-    try: 
+    try:
         current_app.logger.info(f"Starting delete_list request for ID: {list_id}")
         cursor = db.get_db().cursor()
 
@@ -348,7 +348,7 @@ def remove_movie_from_list(list_id, movie_id):
         return jsonify({"error": str(e)}), 500
 
 
-# Get details of a specific watch party 
+# Get details of a specific watch party
 # Example: /user/watchparties/1
 @users.route("/watchparties/<int:party_id>", methods=["GET"])
 def get_watch_party(party_id):
@@ -358,62 +358,102 @@ def get_watch_party(party_id):
         )
         cursor = db.get_db().cursor()
 
-        # Get the watch party
-        query = "SELECT * FROM WatchParties WHERE partyID = %s"
+        # Get the watch party & movie details
+        query = """
+        SELECT wp.partyID, wp.movieID, wp.partyDate, m.Title FROM WatchParties wp
+        JOIN Movies m ON wp.movieID = m.movieID
+        WHERE wp.partyID = %s
+        """
         cursor.execute(query, (party_id,))
         party = cursor.fetchone()
+        
+        # Get watch party members
+        query = """
+        SELECT u.userID, u.firstName, u.lastName FROM WatchPartyMembers wp
+        JOIN UserProfiles u ON wp.userID = u.userID
+        WHERE wp.partyID = %s
+        """
+        cursor.execute(query, (party_id,))
+        members = cursor.fetchall()
+        
+        result = {
+            "party": party,
+            "members": members
+        }
+        
         cursor.close()
 
         current_app.logger.info(f"Retrieved watch party with ID: {party_id}")
         if not party:
             return jsonify({"error": "Watch party not found"}), 404
 
-        return jsonify(party), 200
+        return jsonify(result), 200
     except Error as e:
         current_app.logger.error(f"Error retrieving watch party: {str(e)}")
         return jsonify({"error": str(e)}), 500
-      
-      
+
+
 # Create a new watch party
-# Required fields: userID, movieID, partyDate
-# JSON: {"userID": 1, "movieID": 2, "partyDate": "2025-12-31" }
+# Required fields: userIDs, movieID, partyDate
+# JSON: {"userIDs": [1, 2, 3], "movieID": 2, "partyDate": "2025-12-31" }
 # Example: POST /user/watchparties with JSON body
 @users.route("/watchparties", methods=["POST"])
 def create_watch_party():
-    try: 
+    try:
         current_app.logger.info("Starting create_watch_party request")
         data = request.get_json()
 
         # Validate required fields
-        required_fields = ["userID", "movieID", "partyDate"]
+        required_fields = ["movieID", "partyDate"]
         for field in required_fields:
             if field not in data:
                 current_app.logger.warning(f"Missing required field: {field}")
                 return jsonify({"error": f"Missing required field: {field}"}), 400
+        if len(data["userIDs"]) == 0:
+            current_app.logger.warning("userIDs list is empty")
+            return jsonify({"error": "userIDs list is empty"}), 400
 
         cursor = db.get_db().cursor()
 
         # Insert new watch party
         query = """
-        INSERT INTO WatchParties (userID, movieID, partyDate)
-        VALUES (%s, %s, %s)
+        INSERT INTO WatchParties (movieID, partyDate)
+        VALUES (%s, %s)
         """
         cursor.execute(
             query,
             (
-                data["userID"],
                 data["movieID"],
                 data["partyDate"],
             ),
         )
 
-        db.get_db().commit()
         new_party_id = cursor.lastrowid
+        
+        # Insert party members
+        for user_id in data["userIDs"]:
+            query = """
+            INSERT INTO WatchPartyMembers (partyID, userID)
+            VALUES (%s, %s)
+            """
+            cursor.execute(query, (new_party_id, user_id))
+        
+        db.get_db().commit()
         cursor.close()
 
-        current_app.logger.info(f"Watch party created successfully with ID: {new_party_id}")
+        current_app.logger.info(
+            f"Watch party created successfully with ID: {new_party_id}"
+        )
         return (
-            jsonify({"message": "Watch party created successfully", "party_id": new_party_id}),
+            jsonify(
+                {
+                    "message": "Watch party created successfully",
+                    "party_id": new_party_id,
+                    "movieID": data["movieID"],
+                    "partyDate": data["partyDate"],
+                    "userIDs": data["userIDs"],
+                }
+            ),
             201,
         )
     except Error as e:

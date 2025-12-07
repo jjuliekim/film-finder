@@ -30,7 +30,7 @@ def get_all_movies():
 
         # Add filters if provided
         if year:
-            query += " AND Year = %s"
+            query += " AND yearReleased = %s"
             params.append(year)
         if genre:
             query += """
@@ -42,7 +42,7 @@ def get_all_movies():
             """
             params.append(genre)
         if duration:
-            query += " AND Duration <= %s"
+            query += " AND duration <= %s"
             params.append(duration)
 
         current_app.logger.debug(f"Executing query: {query} with params: {params}")
