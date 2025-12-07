@@ -112,6 +112,7 @@ def SideBarLinks(show_home=False):
     if show_home:
         # Show the Home page link (the landing page)
         HomeNav()
+        AboutPageNav()
 
     # Show the other page navigators depending on the users' role.
     if st.session_state["authenticated"]:
