@@ -24,6 +24,7 @@ from modules.nav import SideBarLinks
 st.markdown(' ### User Requests Data')
 
 #mock data 
+#match to er diagram
 data = {
     'Request ID': [101, 102, 103, 104],
     'User': ['dhruvi@gmail.com', 'yasmin@icloud.com', 'emma@hotmail.com', 'julie@gmail.com'],
