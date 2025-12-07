@@ -1,7 +1,7 @@
 # Idea borrowed from https://github.com/fsmosca/sample-streamlit-authenticator
 
 # This file has function to add certain functionality to the left side bar of the app
-
+import os
 import streamlit as st
 
 
@@ -55,7 +55,7 @@ def MovieAnalytics(): #user story 2.3 + 2.5
     st.sidebar.page_link("pages/08_Movie_Analytics.py", label="Movie Analytics", icon="📊")
 
 def DirectMessage(): #user story 2.6
-    st.sidebar.page_link("pages/09_Direct_Message.py", label="Direct Messsage", icon="💬")
+    st.sidebar.page_link("pages/09_Direct_Message-2.py", label="Direct Message", icon="💬")
 
 
 
@@ -86,7 +86,7 @@ def FindFilmRecs(): #user story 4.2
     st.sidebar.page_link("pages/15_Find_Film_Recs.py", label="Film Recommendations", icon="🪄")
 
 def MoviesSearch(): #user story 4.3
-    st.sidebar.page_link("pages/16_Movies_Search.py", label="Add Profiles", icon="➕")
+    st.sidebar.page_link("pages/16_Movies_Search-2.py", label="Add Profiles", icon="➕")
 
 def WatchParty(): #user story 4.5
     st.sidebar.page_link("pages/17_Watch_Party.py", label="Host Watch Party", icon="👪")
