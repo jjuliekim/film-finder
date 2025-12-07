@@ -81,8 +81,6 @@ def MoviesSearch(): #user story 3.4 + 3.6
 def BilingualMEHomeNav(): 
     st.sidebar.page_link("pages/14_Bilingual_ME_Home.py", label="Bilingual Movie Enthusiast", icon="🍿")
 
-def Captions(): #user story 4.1
-    st.sidebar.page_link("pages/02_Map_Demo.py", label="Captions", icon="🪄")
 
 def FindFilmRecs(): #user story 4.2
     st.sidebar.page_link("pages/15_Find_Film_Recs.py", label="Film Recommendations", icon="🪄")
@@ -90,12 +88,64 @@ def FindFilmRecs(): #user story 4.2
 def MoviesSearch(): #user story 4.3
     st.sidebar.page_link("pages/16_Movies_Search.py", label="Add Profiles", icon="➕")
 
-def WatchTrailer(): #user story 4.4
-    st.sidebar.page_link("pages/02_Map_Demo.py", label="Watch Trailers", icon="📺")
-
 def WatchParty(): #user story 4.5
     st.sidebar.page_link("pages/17_Watch_Party.py", label="Host Watch Party", icon="👪")
 
 
 def AdvancedSearch(): #user story 4.6
     st.sidebar.page_link("pages/18_Advanced_Search.py", label="Advanced Search", icon="🔎")
+
+    # --------------------------------Links Function -----------------------------------------------
+def SideBarLinks(show_home=False):
+    """
+    This function handles adding links to the sidebar of the app based upon the logged-in user's role, which was put in the streamlit session_state object when logging in.
+    """
+
+    # add a logo to the sidebar always
+    st.sidebar.image("assets/logo.png", width=150)
+
+    # If there is no logged in user, redirect to the Home (Landing) page
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+        st.switch_page("Home.py")
+
+    if show_home:
+        # Show the Home page link (the landing page)
+        HomeNav()
+
+    # Show the other page navigators depending on the users' role.
+    if st.session_state["authenticated"]:
+
+        # Show World Bank Link and Map Demo Link if the user is a political strategy advisor role.
+        if st.session_state["role"] == "system_administrator":
+            SysAdminHomeNav()
+            AppVersHistory()
+            UserRequests()
+            Tasks()
+            DirectMessage()
+
+
+        # If the user role is usaid worker, show the Api Testing page
+        if st.session_state["role"] == "data_analyst":
+            DataAnalystHomeNav()
+            SearchMediaNav()
+            UserData()
+            MovieAnalytics()
+            DirectMessage()
+
+        # If the user role is usaid worker, show the Api Testing page
+        if st.session_state["role"] == "movie_critic":
+            MovieCriticHomeNav()
+            Reviews()
+            WatchLists()
+            MoviesSearch()
+
+
+        # If the user role is usaid worker, show the Api Testing page
+        if st.session_state["role"] == "bilingual_me":
+            BilingualMEHomeNav()
+            FindFilmRecs()
+            MoviesSearch()
+            WatchParty()
+            AdvancedSearch()
+
