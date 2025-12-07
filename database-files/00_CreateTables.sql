@@ -106,12 +106,11 @@ CREATE TABLE Movies(
     yearReleased INT, 
     duration INT,
     title VARCHAR(255)
-   # FK goes inside Reviews table
 );
 
 DROP TABLE IF EXISTS Reviews;
 CREATE TABLE Reviews(
-    reviewID INT PRIMARY KEY,
+    reviewID INT PRIMARY KEY AUTO_INCREMENT,
     userID INT, -- FK from UserProfiles
     movieID INT, -- FK from Movies
     reviewText VARCHAR(255),
@@ -123,20 +122,26 @@ CREATE TABLE Reviews(
 
 DROP TABLE IF EXISTS WatchParties;
 CREATE TABLE WatchParties(
-    partyID INT PRIMARY KEY,
+    partyID INT PRIMARY KEY AUTO_INCREMENT,
     movieID INT, -- FK to Movies
-    userID INT, -- FK to UserProfiles
     partyDate DATE,
-    FOREIGN KEY (userID) REFERENCES UserProfiles(userID),
     FOREIGN KEY (movieID) REFERENCES Movies(movieID)
+);
+
+DROP TABLE IF EXISTS WatchPartyMembers;
+CREATE TABLE WatchPartyMembers(
+    partyID INT,
+    userID INT,
+    PRIMARY KEY (partyID, userID),
+    FOREIGN KEY (partyID) REFERENCES WatchParties(partyID),
+    FOREIGN KEY (userID) REFERENCES UserProfiles(userID)
 );
 
 DROP TABLE IF EXISTS Lists;
 CREATE TABLE Lists (
-	listID INT,
+	listID INT PRIMARY KEY AUTO_INCREMENT,
 	listName VARCHAR(100),
 	userID INT,
-	PRIMARY KEY(listID),
 	FOREIGN KEY(userID) REFERENCES UserProfiles(userID)
 );
 
@@ -151,10 +156,10 @@ CREATE TABLE MovieLists (
 
 DROP TABLE IF EXISTS Captions; -- WEAK ENTITY of Movies
 CREATE TABLE Captions(
-    languageID INT, -- partial key
+    lang VARCHAR(3), -- partial key
     movieID INT , -- fk to Movies
     captionText CHAR(255),
-    PRIMARY KEY (languageID, movieID), -- composite key
+    PRIMARY KEY (lang, movieID), -- composite key
     FOREIGN KEY (movieID) REFERENCES Movies(movieID)
 );
 
