@@ -30,7 +30,7 @@ def get_all_users():
         )
 
         # Prepare the Base query
-        query = "SELECT * FROM UserProfiles m WHERE 1=1"
+        query = "SELECT * FROM UserProfiles WHERE 1=1"
         params = []
 
         # Add filters if provided
@@ -308,4 +308,87 @@ def delete_request(requestID):
         return jsonify({"message": "Request deleted successfully"}), 200
     except Error as e:
         current_app.logger.error(f"Error deleting request: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+# Get all messages for specific employee
+# Example: /admin/messages?empID=6
+@admins.route("/admin/messages", methods=["GET"])
+def get_messages(empID):
+    try:
+        current_app.logger.info(f"Getting get_messages request for empID: {empID}")
+        cursor = db.get_db().cursor()
+
+        # Get message details
+        cursor.execute("""
+                       SELECT * FROM Messages m 
+                       JOIN MessageReceived mr 
+                        ON mr.msgID = m.msgID
+                       WHERE (mr.receiver = %s
+                        OR m.sender = %s)""", (empID,))
+        messages = cursor.fetchall()
+
+        if not messages:
+            return jsonify({"error": "Message not found"}), 404
+
+        cursor.close()
+        return jsonify(messages), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_messages: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Create a new NGO
+# Required fields: Name, Country, Founding_Year, Focus_Area, Website
+# Example: POST /ngo/ngos with JSON body
+@ngos.route("/ngos", methods=["POST"])
+def create_ngo():
+    try:
+        data = request.get_json()
+
+        # Validate required fields
+        required_fields = ["Name", "Country", "Founding_Year", "Focus_Area", "Website"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        cursor = db.get_db().cursor()
+
+        # Insert new NGO
+        query = """
+        INSERT INTO WorldNGOs (Name, Country, Founding_Year, Focus_Area, Website)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(
+            query,
+            (
+                data["Name"],
+                data["Country"],
+                data["Founding_Year"],
+                data["Focus_Area"],
+                data["Website"],
+            ),
+        )
+
+        db.get_db().commit()
+        new_ngo_id = cursor.lastrowid
+        cursor.close()
+
+        return (
+            jsonify({"message": "NGO created successfully", "ngo_id": new_ngo_id}),
+            201,
+        )
+    except Error as e:
         return jsonify({"error": str(e)}), 500
