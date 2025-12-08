@@ -164,38 +164,65 @@ def create_task():
         current_app.logger.error(f"Error creating task: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-
-
-
-
-
-
-
-
-
-
-
-# Delete a specific review
-# Example: DELETE /user/reviews/1
-@users.route("/reviews/<int:review_id>", methods=["DELETE"])
-def delete_review(review_id):
+# Update task status or details
+# Example: PUT /admin/tasks/1 with JSON body containing fields to update
+@admins.route("/tasks/<int:taskID>", methods=["PUT"])
+def update_task(taskID):
     try:
-        current_app.logger.info(f"Starting delete_review request for ID: {review_id}")
+        data = request.get_json()
+
+        # Check if NGO exists
         cursor = db.get_db().cursor()
-
-        # Check if review exists
-        cursor.execute("SELECT * FROM Reviews WHERE reviewID = %s", (review_id,))
+        cursor.execute("SELECT * FROM Tasks WHERE taskID = %s", (taskID,))
         if not cursor.fetchone():
-            return jsonify({"error": "Review not found"}), 404
+            return jsonify({"error": "Task not found"}), 404
 
-        # Delete review
-        query = "DELETE FROM Reviews WHERE reviewID = %s"
-        cursor.execute(query, (review_id,))
+        # Build update query dynamically based on provided fields
+        update_fields = []
+        params = []
+        allowed_fields = ["description", "completedAt"]
+
+        for field in allowed_fields:
+            if field in data:
+                update_fields.append(f"{field} = %s")
+                params.append(data[field])
+
+        if not update_fields:
+            return jsonify({"error": "No valid fields to update"}), 400
+
+        params.append(taskID)
+        query = f"UPDATE Tasks SET {', '.join(update_fields)} WHERE taskID = %s"
+
+        cursor.execute(query, params)
         db.get_db().commit()
         cursor.close()
 
-        current_app.logger.info(f"Review with ID {review_id} deleted successfully")
-        return jsonify({"message": "Review deleted successfully"}), 200
+        return jsonify({"message": "Task updated successfully"}), 200
     except Error as e:
-        current_app.logger.error(f"Error deleting review: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+# Delete a task
+# Example: DELETE /admin/tasks/1
+@admins.route("/tasks/<int:taskID>", methods=["DELETE"])
+def delete_task(taskID):
+    try:
+        current_app.logger.info(f"Starting delete_task request for ID: {taskID}")
+        cursor = db.get_db().cursor()
+
+        # Check if task exists
+        cursor.execute("SELECT * FROM Lists WHERE taskID = %s", (taskID,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Task not found"}), 404
+
+        # Delete task
+        query = "DELETE FROM Tasks WHERE taskID = %s"
+        cursor.execute(query, (taskID,))
+        db.get_db().commit()
+        cursor.close()
+
+        current_app.logger.info(f"Task with ID {taskID} deleted successfully")
+        return jsonify({"message": "Task deleted successfully"}), 200
+    except Error as e:
+        current_app.logger.error(f"Error deleting task: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
