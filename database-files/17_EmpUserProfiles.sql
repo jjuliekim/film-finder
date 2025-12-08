@@ -27,5 +27,4 @@ insert into EmpUserProfiles (empID, userID) values (25, 28);
 insert into EmpUserProfiles (empID, userID) values (14, 6);
 insert into EmpUserProfiles (empID, userID) values (14, 17);
 insert into EmpUserProfiles (empID, userID) values (5, 16);
-insert into EmpUserProfiles (empID, userID) values (7, 14);
 insert into EmpUserProfiles (empID, userID) values (12, 13);

@@ -46,7 +46,7 @@ CREATE TABLE EmpUserProfiles(
 
 DROP TABLE IF EXISTS Messages;
 CREATE TABLE Messages(
-    msgID INT PRIMARY KEY,
+    msgID INT PRIMARY KEY AUTO_INCREMENT,
     content TEXT,
     sender INT,
     FOREIGN KEY (sender) REFERENCES Employees(empID)

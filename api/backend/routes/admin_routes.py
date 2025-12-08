@@ -321,8 +321,9 @@ def delete_request(requestID):
 # Get all messages for specific employee
 # Example: /admin/messages?empID=6
 @admins.route("/messages", methods=["GET"])
-def get_messages(empID):
+def get_messages():
     try:
+        empID = request.args.get("empID")
         current_app.logger.info(f"Getting get_messages request for empID: {empID}")
         cursor = db.get_db().cursor()
 
@@ -388,7 +389,7 @@ def create_message():
 
         # Apply receivers
         receiver_query = """
-                        INSERT INTO MessageReceived (msgID, receiverID)
+                        INSERT INTO MessageReceived (msgID, receiver)
                         VALUES (%s, %s)
                         """
 
