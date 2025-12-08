@@ -6,13 +6,6 @@ from modules.nav import SideBarLinks
 st.set_page_config(layout="wide")
 SideBarLinks()
 
-import streamlit as st
-import requests
-from modules.nav import SideBarLinks
-
-st.set_page_config(layout="wide")
-SideBarLinks()
-
 st.title("Find Film Recommendations")
 st.write("")
 
