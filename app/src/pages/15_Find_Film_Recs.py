@@ -32,7 +32,7 @@ genre_selection = st.selectbox(
 # 2. Get the numeric ID from the selection
 genre_id = genre_map[genre_selection]
 
-st.write("# Accessing a REST API from Within Streamlit")
+st.write("# Getting you the top movies for your genre!")
 
 if st.button("Get Movies"):
     # 3. Use an f-string to put the number into the URL
