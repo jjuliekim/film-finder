@@ -64,7 +64,7 @@ CREATE TABLE MessageReceived(
 
 DROP TABLE IF EXISTS Tasks;
 CREATE TABLE Tasks(
-    taskID           INT PRIMARY KEY,
+    taskID           INT PRIMARY KEY AUTO_INCREMENT,
     createdAt        DATETIME,
     completedAt      DATETIME,
     description TEXT NOT NULL,
