@@ -75,7 +75,7 @@ def WatchLists(): #user story 3.2 + 3.3
 
 
 def MoviesSearch(): #user story 3.4 + 3.6
-    st.sidebar.page_link("pages/13_Movies_Search.py", label="Advanced Search", icon="🔎")
+    st.sidebar.page_link("pages/18_Advanced_Search.py", label="Advanced Search", icon="🔎")
 
 #### ------------------------ Bilingual Movie Enthusiast  ------------------------
 def BilingualMEHomeNav(): 
@@ -86,7 +86,7 @@ def FindFilmRecs(): #user story 4.2
     st.sidebar.page_link("pages/15_Find_Film_Recs.py", label="Film Recommendations", icon="🪄")
 
 def MoviesSearch(): #user story 4.3
-    st.sidebar.page_link("pages/16_Movies_Search-2.py", label="Add Profiles", icon="➕")
+    st.sidebar.page_link("pages/19_Kids_Prof.py", label="Add Profiles", icon="➕")
 
 def WatchParty(): #user story 4.5
     st.sidebar.page_link("pages/17_Watch_Party.py", label="Host Watch Party", icon="👪")
@@ -94,6 +94,9 @@ def WatchParty(): #user story 4.5
 
 def AdvancedSearch(): #user story 4.6
     st.sidebar.page_link("pages/18_Advanced_Search.py", label="Advanced Search", icon="🔎")
+
+def AddKids(): #user story 4.6
+    st.sidebar.page_link("pages/19_Kids_Prof.py", label="Add Profiles", icon="➕")
 
     # --------------------------------Links Function -----------------------------------------------
 def SideBarLinks(show_home=False):
@@ -139,14 +142,13 @@ def SideBarLinks(show_home=False):
             MovieCriticHomeNav()
             Reviews()
             WatchLists()
-            MoviesSearch()
+    
 
 
         # If the user role is usaid worker, show the Api Testing page
         if st.session_state["role"] == "bilingual_me":
             BilingualMEHomeNav()
             FindFilmRecs()
-            MoviesSearch()
             WatchParty()
             AdvancedSearch()
 
