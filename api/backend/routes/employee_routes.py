@@ -142,6 +142,35 @@ def get_version(versionID):
         return jsonify({"error": str(e)}), 500
 
 
+# Restore a specific app version
+# Example: PUT /employees/versions/1
+@employees.route("/versions/<int:versionID>", methods=["PUT"])
+def restore_version(versionID):
+    try:
+        current_app.logger.info(f"Restoring version with versionID: {versionID}")
+        cursor = db.get_db().cursor()
+        
+        cursor.execute("SELECT * FROM AppVersions WHERE versionID = %s", (versionID,))
+        version = cursor.fetchone()
+        if not version:
+            return jsonify({"error": "Version not found"}), 404
+          
+        query = """
+        UPDATE AppVersions
+        SET publishedAt = NOW()
+        WHERE versionID = %s
+        """
+        cursor.execute(query, (versionID,))
+        db.get_db().commit()
+
+        cursor.close()
+        return jsonify({"message": "Version restored successfully"}), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in restore_version: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
 # Get all saved searches for an employee
 # Example: /employees/searches?empID=6
 @employees.route("/searches", methods=["GET"])
