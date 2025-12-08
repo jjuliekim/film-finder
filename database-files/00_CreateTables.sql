@@ -39,7 +39,6 @@ DROP TABLE IF EXISTS EmpUserProfiles;
 CREATE TABLE EmpUserProfiles(
     empID INT,
     userID INT,
-
     PRIMARY KEY (empID, userID),
     FOREIGN KEY (empID) REFERENCES Employees(empID),
     FOREIGN KEY (userID) REFERENCES UserProfiles(userID)
@@ -47,7 +46,7 @@ CREATE TABLE EmpUserProfiles(
 
 DROP TABLE IF EXISTS Messages;
 CREATE TABLE Messages(
-    msgID INT PRIMARY KEY,
+    msgID INT PRIMARY KEY AUTO_INCREMENT,
     content TEXT,
     sender INT,
     FOREIGN KEY (sender) REFERENCES Employees(empID)
@@ -67,7 +66,7 @@ CREATE TABLE Tasks(
     taskID           INT PRIMARY KEY AUTO_INCREMENT,
     createdAt        DATETIME,
     completedAt      DATETIME,
-    description TEXT NOT NULL,
+    description      TEXT NOT NULL,
     empID INT,
     FOREIGN KEY (empID) REFERENCES Employees(empID)
 );
@@ -92,9 +91,9 @@ CREATE TABLE SavedSearches(
 
 DROP TABLE IF EXISTS AppVersions;
 CREATE TABLE AppVersions(
-    versionID INT PRIMARY KEY,
-    createdAt TIMESTAMP,
-    publishedAt TIMESTAMP,
+    versionID INT PRIMARY KEY AUTO_INCREMENT,
+    createdAt DATETIME,
+    publishedAt DATETIME,
     description TEXT,
     empID INT,
     FOREIGN KEY (empID) REFERENCES Employees(empID)
@@ -111,11 +110,11 @@ CREATE TABLE Movies(
 DROP TABLE IF EXISTS Reviews;
 CREATE TABLE Reviews(
     reviewID INT PRIMARY KEY AUTO_INCREMENT,
-    userID INT, -- FK from UserProfiles
-    movieID INT, -- FK from Movies
+    userID INT, 
+    movieID INT, 
     reviewText VARCHAR(255),
     publishedDate DATETIME,
-    starRating INT, -- stores values 1-5
+    starRating INT, 
     FOREIGN KEY (userID) REFERENCES UserProfiles(userID),
     FOREIGN KEY (movieID) REFERENCES Movies(movieID)
 );
@@ -123,7 +122,7 @@ CREATE TABLE Reviews(
 DROP TABLE IF EXISTS WatchParties;
 CREATE TABLE WatchParties(
     partyID INT PRIMARY KEY AUTO_INCREMENT,
-    movieID INT, -- FK to Movies
+    movieID INT, 
     partyDate DATE,
     FOREIGN KEY (movieID) REFERENCES Movies(movieID)
 );
