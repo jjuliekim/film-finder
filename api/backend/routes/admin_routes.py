@@ -9,6 +9,11 @@ admins = Blueprint("admin", __name__)
 
 # Get all user info
 # Example: /admin/users?forKids=true
+def get_bool(val):
+    if val in ["true", "1"]:
+        return 1
+    else:
+        return 0
 @admins.route("/users", methods=["GET"])
 def get_all_users():
     try:
@@ -16,14 +21,14 @@ def get_all_users():
         cursor = db.get_db().cursor()
 
         # Get query parameters for filtering
-        userID = request.args.get('userID')
+        userID = request.args.get("userID")
         DOB = request.args.get("DOB")
         firstName = request.args.get("firstName")
         lastName = request.args.get("lastName")
-        gender = request.args.get('gender')
-        forKids = request.args.get('forKids')
-        forTeens = request.args.get('forTeens')
-        forAdults = request.args.get('forAdults')
+        gender = request.args.get("gender")
+        forKids = get_bool(request.args.get("forKids"))
+        forTeens = get_bool(request.args.get("forTeens"))
+        forAdults = get_bool(request.args.get("forAdults"))
 
         current_app.logger.debug(
             f"Query parameters - userID: {userID}, DOB: {DOB}, firstName: {firstName}, lastName: {lastName}, gender: {gender}, forKids: {forKids}, forTeens: {forTeens}, forAdults: {forAdults}"
@@ -51,15 +56,15 @@ def get_all_users():
         if gender:
             query += " AND gender = %s"
             params.append(gender)
-        if forKids:
+        if forKids is not None:
             query += " AND forKids = %s"
             params.append(forKids)
-        if forTeens:
+        if forTeens is not None:
             query += " AND forTeens = %s"
-            params.append(forTeens)  
-        if forAdults:
+            params.append(forTeens)
+        if forAdults is not None:
             query += " AND forAdults = %s"
-            params.append(forAdults)          
+            params.append(forAdults)
 
         current_app.logger.debug(f"Executing query: {query} with params: {params}")
         cursor.execute(query, params)
@@ -76,7 +81,7 @@ def get_all_users():
 
 # Get detailed information about a specific user
 # Example: /admin/users/6
-@admins.route("/admin/users/<int:userID>", methods=["GET"])
+@admins.route("/users/<int:userID>", methods=["GET"])
 def get_user(userID):
     try:
         current_app.logger.info(f"Getting get_user request for userID: {userID}")
@@ -95,10 +100,11 @@ def get_user(userID):
     except Error as e:
         current_app.logger.error(f"Database error in get_user: {str(e)}")
         return jsonify({"error": str(e)}), 500
-    
+
+
 # Get all tasks for specific employee
 # Example: /admin/tasks?empID=6
-@admins.route("/admin/tasks", methods=["GET"])
+@admins.route("/tasks", methods=["GET"])
 def get_tasks(empID):
     try:
         current_app.logger.info(f"Getting get_tasks request for empID: {empID}")
@@ -145,10 +151,7 @@ def create_task():
         """
         cursor.execute(
             query,
-            (
-                data["empID"],
-                data["description"]
-            ),
+            (data["empID"], data["description"]),
         )
 
         db.get_db().commit()
@@ -163,6 +166,7 @@ def create_task():
     except Error as e:
         current_app.logger.error(f"Error creating task: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 # Update task status or details
 # Example: PUT /admin/tasks/1 with JSON body containing fields to update
@@ -201,6 +205,7 @@ def update_task(taskID):
     except Error as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Delete a task
 # Example: DELETE /admin/tasks/1
 @admins.route("/tasks/<int:taskID>", methods=["DELETE"])
@@ -226,9 +231,10 @@ def delete_task(taskID):
         current_app.logger.error(f"Error deleting task: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+
 # Get all requests for specific employee
 # Example: /admin/requests?empID=6
-@admins.route("/admin/requests", methods=["GET"])
+@admins.route("/requests", methods=["GET"])
 def get_requests(empID):
     try:
         current_app.logger.info(f"Getting get_requests request for empID: {empID}")
@@ -248,10 +254,11 @@ def get_requests(empID):
         current_app.logger.error(f"Database error in get_requests: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+
 # Update request status
 # Example: PUT /admin/requests/1 with JSON body containing fields to update
 @admins.route("/requests/<int:requestID>", methods=["PUT"])
-def update_task(requestID):
+def update_request(requestID):
     try:
         data = request.get_json()
 
@@ -285,6 +292,7 @@ def update_task(requestID):
     except Error as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Delete a request
 # Example: DELETE /admin/requests/1
 @admins.route("/requests/<int:requestID>", methods=["DELETE"])
@@ -310,21 +318,25 @@ def delete_request(requestID):
         current_app.logger.error(f"Error deleting request: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+
 # Get all messages for specific employee
 # Example: /admin/messages?empID=6
-@admins.route("/admin/messages", methods=["GET"])
+@admins.route("/messages", methods=["GET"])
 def get_messages(empID):
     try:
         current_app.logger.info(f"Getting get_messages request for empID: {empID}")
         cursor = db.get_db().cursor()
 
         # Get message details
-        cursor.execute("""
+        cursor.execute(
+            """
                        SELECT * FROM Messages m 
                        JOIN MessageReceived mr 
                         ON mr.msgID = m.msgID
                        WHERE (mr.receiver = %s
-                        OR m.sender = %s)""", (empID,))
+                        OR m.sender = %s)""",
+            (empID,),
+        )
         messages = cursor.fetchall()
 
         if not messages:
@@ -337,11 +349,12 @@ def get_messages(empID):
         current_app.logger.error(f"Database error in get_messages: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+
 # Create a new message
 # Required fields: content, receiver
 # Example: POST /admin/messages with JSON body
 @admins.route("/messages", methods=["POST"])
-def create_message(sender):
+def create_message(sender): 
     try:
         data = request.get_json()
 
@@ -352,13 +365,15 @@ def create_message(sender):
                 return jsonify({"error": f"Missing required field: {field}"}), 400
 
         # Validate receiver is a list
-        if not isinstance(data['receiver'], list) or len(data['receiver']) == 0:
+        if not isinstance(data["receiver"], list) or len(data["receiver"]) == 0:
             return jsonify({"error": "Receiver must be a non-empty list"}), 400
 
         cursor = db.get_db().cursor()
 
         # Verify sender exists and is an employee
-        cursor.execute("SELECT empID FROM Employees WHERE empID == %s", (data['sender'],))
+        cursor.execute(
+            "SELECT empID FROM Employees WHERE empID == %s", (data["sender"],)
+        )
         if cursor.fetchone() is None:
             cursor.close()
             return jsonify({"error": "Employee not found"}), 404
@@ -370,10 +385,7 @@ def create_message(sender):
                         """
         cursor.execute(
             message_query,
-            (
-                data["content"],
-                data["sender"]
-            ),
+            (data["content"], data["sender"]),
         )
 
         new_message_id = cursor.lastrowid
@@ -383,7 +395,7 @@ def create_message(sender):
                         INSERT INTO MessageReceived (msgID, receiverID)
                         VALUES (%s, %s)
                         """
-        
+
         for receiver_id in data["receiver"]:
             cursor.execute(receiver_query, (new_message_id, receiver_id))
 
@@ -391,28 +403,38 @@ def create_message(sender):
         cursor.close()
 
         return (
-            jsonify({"message": "Message created successfully", 
-                     "messageID": new_message_id,
-                     "num_recipients": len(data["receiver"])}),
+            jsonify(
+                {
+                    "message": "Message created successfully",
+                    "messageID": new_message_id,
+                    "num_recipients": len(data["receiver"]),
+                }
+            ),
             201,
         )
     except Error as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Get all saved searches for an employee
 # Example: /admin/searches?empID=6
-@admins.route("/admin/search", methods=["GET"])
+@admins.route("/searches", methods=["GET"])
 def get_saved_searches(empID):
     try:
-        current_app.logger.info(f"Getting get_saved_searches request for empID: {empID}")
+        current_app.logger.info(
+            f"Getting get_saved_searches request for empID: {empID}"
+        )
         cursor = db.get_db().cursor()
 
         # Get search details
-        cursor.execute("""
+        cursor.execute(
+            """
                        SELECT * FROM FilteredSearches fs
                        JOIN SavedSearches ss 
                         ON ss.searchID = fs.searchID
-                       WHERE (ss.empID = %s)""", (empID,))
+                       WHERE (ss.empID = %s)""",
+            (empID,),
+        )
         searches = cursor.fetchall()
 
         if not searches:
