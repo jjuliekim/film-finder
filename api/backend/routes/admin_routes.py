@@ -284,3 +284,28 @@ def update_task(requestID):
         return jsonify({"message": "Request updated successfully"}), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
+
+# Delete a request
+# Example: DELETE /admin/requests/1
+@admins.route("/requests/<int:requestID>", methods=["DELETE"])
+def delete_request(requestID):
+    try:
+        current_app.logger.info(f"Starting delete_request request for ID: {requestID}")
+        cursor = db.get_db().cursor()
+
+        # Check if request exists
+        cursor.execute("SELECT * FROM Requests WHERE requestID = %s", (requestID,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Request not found"}), 404
+
+        # Delete request
+        query = "DELETE FROM Requests WHERE requestID = %s"
+        cursor.execute(query, (requestID,))
+        db.get_db().commit()
+        cursor.close()
+
+        current_app.logger.info(f"Request with ID {requestID} deleted successfully")
+        return jsonify({"message": "Request deleted successfully"}), 200
+    except Error as e:
+        current_app.logger.error(f"Error deleting request: {str(e)}")
+        return jsonify({"error": str(e)}), 500
