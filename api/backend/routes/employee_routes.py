@@ -170,3 +170,45 @@ def get_saved_searches():
     except Error as e:
         current_app.logger.error(f"Database error in get_saved_searches: {str(e)}")
         return jsonify({"error": str(e)}), 500
+    
+# Add notes to saved searches
+# Example: PUT /employees/searches/1 with JSON body containing fields to update
+@employees.route("/searches/<int:searchID>", methods=["PUT"])
+def update_search(searchID):
+    try:
+        data = request.get_json()
+
+        # Request employee id
+        empID = data.get("empID")
+        if not empID:
+            return jsonify({"error": "Missing required field: empID"}), 400
+
+        # Check if search exists
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT * FROM SavedSearches WHERE searchID = %s AND empID = %s", (searchID, empID))
+        if not cursor.fetchone():
+            return jsonify({"error": "Search not found or not saved by this employee"}), 404
+
+        # Build update query dynamically based on provided fields
+        update_fields = []
+        params = []
+        allowed_fields = ["annotations"]
+
+        for field in allowed_fields:
+            if field in data:
+                update_fields.append(f"{field} = %s")
+                params.append(data[field])
+
+        if not update_fields:
+            return jsonify({"error": "No valid fields to update"}), 400
+
+        params.append(searchID)
+        query = f"UPDATE FilteredSearches SET {', '.join(update_fields)} WHERE searchID = %s"
+
+        cursor.execute(query, params)
+        db.get_db().commit()
+        cursor.close()
+
+        return jsonify({"message": "Search updated successfully"}), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
