@@ -171,7 +171,7 @@ def update_task(taskID):
     try:
         data = request.get_json()
 
-        # Check if NGO exists
+        # Check if task exists
         cursor = db.get_db().cursor()
         cursor.execute("SELECT * FROM Tasks WHERE taskID = %s", (taskID,))
         if not cursor.fetchone():
@@ -248,3 +248,39 @@ def get_requests(empID):
         current_app.logger.error(f"Database error in get_requests: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+# Update request status
+# Example: PUT /admin/requests/1 with JSON body containing fields to update
+@admins.route("/requests/<int:requestID>", methods=["PUT"])
+def update_task(requestID):
+    try:
+        data = request.get_json()
+
+        # Check if request exists
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT * FROM Requests WHERE requestID = %s", (requestID,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Request not found"}), 404
+
+        # Build update query dynamically based on provided fields
+        update_fields = []
+        params = []
+        allowed_fields = ["status"]
+
+        for field in allowed_fields:
+            if field in data:
+                update_fields.append(f"{field} = %s")
+                params.append(data[field])
+
+        if not update_fields:
+            return jsonify({"error": "No valid fields to update"}), 400
+
+        params.append(requestID)
+        query = f"UPDATE Requests SET {', '.join(update_fields)} WHERE requestID = %s"
+
+        cursor.execute(query, params)
+        db.get_db().commit()
+        cursor.close()
+
+        return jsonify({"message": "Request updated successfully"}), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
