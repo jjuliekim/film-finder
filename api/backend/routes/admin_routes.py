@@ -226,3 +226,25 @@ def delete_task(taskID):
         current_app.logger.error(f"Error deleting task: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+# Get all requests for specific employee
+# Example: /admin/requests?empID=6
+@admins.route("/admin/requests", methods=["GET"])
+def get_requests(empID):
+    try:
+        current_app.logger.info(f"Getting get_requests request for empID: {empID}")
+        cursor = db.get_db().cursor()
+
+        # Get requests details
+        cursor.execute("SELECT * FROM Requests WHERE empID = %s", (empID,))
+        requests = cursor.fetchall()
+
+        if not requests:
+            return jsonify({"error": "Request not found"}), 404
+
+        cursor.close()
+        return jsonify(requests), 200
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_requests: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
