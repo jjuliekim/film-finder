@@ -54,7 +54,7 @@ def UserData(): #user story 2.4
 def MovieAnalytics(): #user story 2.3 + 2.5
     st.sidebar.page_link("pages/08_Movie_Analytics.py", label="Movie Analytics", icon="📊")
 
-def DirectMessage(): #user story 2.6
+def DirectMessage2(): #user story 2.6
     st.sidebar.page_link("pages/09_Direct_Message-2.py", label="Direct Message", icon="💬")
 
 
@@ -132,7 +132,7 @@ def SideBarLinks(show_home=False):
             SearchMediaNav()
             UserData()
             MovieAnalytics()
-            DirectMessage()
+            DirectMessage2()
 
         # If the user role is usaid worker, show the Api Testing page
         if st.session_state["role"] == "movie_critic":
