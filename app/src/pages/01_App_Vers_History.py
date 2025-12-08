@@ -15,11 +15,14 @@ st.markdown(" #### App Versions")
 url = "http://api:4000/employee/versions"
 
 try:
-    response = requests.get(url)
+    # 1. Fetch all versions to display
+    response = requests.get(BASE_URL)
     response.raise_for_status()
     versions_data = response.json()
 
     if versions_data:
+        # Assume the list is sorted by date (newest first). 
+        # The first item is the Current Active Version.
         current_version = versions_data[0]
         
         st.markdown("---")
