@@ -337,57 +337,63 @@ def get_messages(empID):
         current_app.logger.error(f"Database error in get_messages: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Create a new NGO
-# Required fields: Name, Country, Founding_Year, Focus_Area, Website
-# Example: POST /ngo/ngos with JSON body
-@ngos.route("/ngos", methods=["POST"])
-def create_ngo():
+# Create a new message
+# Required fields: content, receiver
+# Example: POST /admin/messages with JSON body
+@admins.route("/messages", methods=["POST"])
+def create_message(sender):
     try:
         data = request.get_json()
 
         # Validate required fields
-        required_fields = ["Name", "Country", "Founding_Year", "Focus_Area", "Website"]
+        required_fields = ["content", "sender", "receiver"]
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Missing required field: {field}"}), 400
 
+        # Validate receiver is a list
+        if not isinstance(data['receiver'], list) or len(data['receiver']) == 0:
+            return jsonify({"error": "Receiver must be a non-empty list"}), 400
+
         cursor = db.get_db().cursor()
 
-        # Insert new NGO
-        query = """
-        INSERT INTO WorldNGOs (Name, Country, Founding_Year, Focus_Area, Website)
-        VALUES (%s, %s, %s, %s, %s)
-        """
+        # Verify sender exists and is an employee
+        cursor.execute("SELECT empID FROM Employees WHERE empID == %s", (data['sender'],))
+        if cursor.fetchone() is None:
+            cursor.close()
+            return jsonify({"error": "Employee not found"}), 404
+
+        # Insert new message
+        message_query = """
+                        INSERT INTO Messages (content, sender)
+                        VALUES (%s, %s)
+                        """
         cursor.execute(
-            query,
+            message_query,
             (
-                data["Name"],
-                data["Country"],
-                data["Founding_Year"],
-                data["Focus_Area"],
-                data["Website"],
+                data["content"],
+                data["sender"]
             ),
         )
 
+        new_message_id = cursor.lastrowid
+
+        # Apply receivers
+        receiver_query = """
+                        INSERT INTO MessageReceived (msgID, receiverID)
+                        VALUES (%s, %s)
+                        """
+        
+        for receiver_id in data["receiver"]:
+            cursor.execute(receiver_query, (new_message_id, receiver_id))
+
         db.get_db().commit()
-        new_ngo_id = cursor.lastrowid
         cursor.close()
 
         return (
-            jsonify({"message": "NGO created successfully", "ngo_id": new_ngo_id}),
+            jsonify({"message": "Message created successfully", 
+                     "messageID": new_message_id,
+                     "num_recipients": len(data["receiver"])}),
             201,
         )
     except Error as e:
