@@ -133,7 +133,7 @@ def get_tasks(empID):
 # Create a new task
 # Required fields: empID, description
 # JSON: {"empID": 6, "description": "respond to Iris email" }
-# Example: POST /admin/tasks with JSON body
+# Example: POST /tasks with JSON body
 @admins.route("/tasks", methods=["POST"])
 def create_task():
     try:
@@ -238,8 +238,8 @@ def delete_task(taskID):
 
 
 # Get all requests for specific employee
-# Example: /admin/requests?empID=6
-@admins.route("/requests", methods=["GET"])
+# Example: /admin/requests?empID=16
+@admins.route("/requests/<int:empID>", methods=["GET"])
 def get_requests(empID):
     try:
         current_app.logger.info(f"Getting get_requests request for empID: {empID}")
