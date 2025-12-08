@@ -19,7 +19,7 @@ def get_all_employees():
         empID = request.args.get("empID")
         firstName = request.args.get("firstName")
         lastName = request.args.get("lastName")
-        role = request.args.get('role')
+        role = request.args.get("role")
 
         current_app.logger.debug(
             f"Query parameters - empID: {empID}, firstName: {firstName}, lastName: {lastName}, role: {role}"
