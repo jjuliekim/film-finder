@@ -1,4 +1,36 @@
-# Fall 2025 CS 3200 Project Template
+# Film Finder
+
+This all-in-one web application allows you to find movies based on user recommendations. Inspired by Netflix and Letterboxd, users can now view films, create personalized watchlists, and rate what they watch all in one platform.
+
+**Created by:** Julie Kim, Emma Gershman, Yasmine Bader, Dhruvi Kapadia
+
+
+## Prerequisites
+1. Clone this repository to your local machine
+    - `git clone https://github.com/jjuliekim/film-finder.git`
+2. Set up the `.env` file in the `api` folder based on the `.env.template` file.
+    - Make a copy of the `.env.template` file and name it `.env`. 
+    - Open the new `.env` file. 
+    - On the last line, delete the `<...>` placeholder text, and put a password.
+    ```
+    SECRET_KEY=someCrazyS3cR3T!Key.!
+    DB_USER=root
+    DB_HOST=db
+    DB_PORT=3306
+    DB_NAME=film-finder
+    MYSQL_ROOT_PASSWORD=<put a good password here>
+    ```
+
+## Start Application
+Run these commands in the (Docker) terminal
+- `docker compose up` to build and start all containers
+- You should see the `web-app`, `web-api`, and `mysql_db` services running
+- Access the application at `http://localhost:8501`
+
+Run `docker compose down` to stop all services
+
+
+<!-- # Fall 2025 CS 3200 Project Template
 
 This is a template repo for Dr. Fontenot's Fall 2025 CS 3200 Course Project. 
 
@@ -130,4 +162,4 @@ _Note_: This project only contains the infrastructure for a hypothetical ML mode
 1. Review the `api/backend/ml_models` module. In this folder,
    - We've put a sample (read _fake_) ML model in the `model01.py` file. The `predict` function will be called by the Flask REST API to perform '_real-time_' prediction based on model parameter values that are stored in the database. **Important**: you would never want to hard code the model parameter weights directly in the prediction function.
 1. The prediction route for the REST API is in `api/backend/customers/customer_routes.py`. Basically, it accepts two URL parameters and passes them to the `prediction` function in the `ml_models` module. The `prediction` route/function packages up the value(s) it receives from the model's `predict` function and send its back to Streamlit as JSON.
-1. Back in streamlit, check out `app/src/pages/11_Prediction.py`. Here, I create two numeric input fields. When the button is pressed, it makes a request to the REST API URL `/c/prediction/.../...` function and passes the values from the two inputs as URL parameters. It gets back the results from the route and displays them. Nothing fancy here.
+1. Back in streamlit, check out `app/src/pages/11_Prediction.py`. Here, I create two numeric input fields. When the button is pressed, it makes a request to the REST API URL `/c/prediction/.../...` function and passes the values from the two inputs as URL parameters. It gets back the results from the route and displays them. Nothing fancy here. -->
