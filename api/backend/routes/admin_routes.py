@@ -419,35 +419,3 @@ def create_message(sender):
         )
     except Error as e:
         return jsonify({"error": str(e)}), 500
-
-
-# Get all saved searches for an employee
-# Example: /admin/searches?empID=6
-@admins.route("/searches", methods=["GET"])
-def get_saved_searches(empID):
-    try:
-        current_app.logger.info(
-            f"Getting get_saved_searches request for empID: {empID}"
-        )
-        cursor = db.get_db().cursor()
-
-        # Get search details
-        cursor.execute(
-            """
-                       SELECT * FROM FilteredSearches fs
-                       JOIN SavedSearches ss 
-                        ON ss.searchID = fs.searchID
-                       WHERE (ss.empID = %s)""",
-            (empID,),
-        )
-        searches = cursor.fetchall()
-
-        if not searches:
-            return jsonify({"error": "Search not found"}), 404
-
-        cursor.close()
-        return jsonify(searches), 200
-
-    except Error as e:
-        current_app.logger.error(f"Database error in get_saved_searches: {str(e)}")
-        return jsonify({"error": str(e)}), 500
