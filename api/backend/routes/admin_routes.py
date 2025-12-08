@@ -56,13 +56,13 @@ def get_all_users():
         if gender:
             query += " AND gender = %s"
             params.append(gender)
-        if forKids is not None:
+        if forKids:
             query += " AND forKids = %s"
             params.append(forKids)
-        if forTeens is not None:
+        if forTeens:
             query += " AND forTeens = %s"
             params.append(forTeens)
-        if forAdults is not None:
+        if forAdults:
             query += " AND forAdults = %s"
             params.append(forAdults)
 
@@ -103,7 +103,7 @@ def get_user(userID):
 
 
 # Get all tasks for specific employee
-# Example: /admin/tasks?empID=6
+# Example: /admin/tasks/1
 @admins.route("/tasks/<int:empID>", methods=["GET"])
 def get_tasks(empID):
     try:
@@ -111,13 +111,18 @@ def get_tasks(empID):
         cursor = db.get_db().cursor()
 
         # Get task details
-        cursor.execute("SELECT * FROM Tasks WHERE empID = %s", (empID,))
+        query = """
+        SELECT * FROM Tasks WHERE empID = %s
+        ORDER BY createdAt DESC
+        """
+        cursor.execute(query, (empID,))
         tasks = cursor.fetchall()
 
-        if not tasks:
-            return jsonify({"error": "Tasks not found"}), 404
+        # if not tasks:
+        #     return jsonify({"error": "Tasks not found"}), 404
 
         cursor.close()
+        current_app.logger.info(f"Retrieved tasks for empID: {empID}")
         return jsonify(tasks), 200
 
     except Error as e:
