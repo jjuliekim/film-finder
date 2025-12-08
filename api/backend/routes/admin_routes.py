@@ -118,9 +118,6 @@ def get_tasks(empID):
         cursor.execute(query, (empID,))
         tasks = cursor.fetchall()
 
-        # if not tasks:
-        #     return jsonify({"error": "Tasks not found"}), 404
-
         cursor.close()
         current_app.logger.info(f"Retrieved tasks for empID: {empID}")
         return jsonify(tasks), 200
@@ -152,7 +149,7 @@ def create_task():
         # Insert new list
         query = """
         INSERT INTO Tasks (empID, description)
-        VALUES (%s, %s, %s)
+        VALUES (%s, %s)
         """
         cursor.execute(
             query,
@@ -220,7 +217,7 @@ def delete_task(taskID):
         cursor = db.get_db().cursor()
 
         # Check if task exists
-        cursor.execute("SELECT * FROM Lists WHERE taskID = %s", (taskID,))
+        cursor.execute("SELECT * FROM Tasks WHERE taskID = %s", (taskID,))
         if not cursor.fetchone():
             return jsonify({"error": "Task not found"}), 404
 
@@ -238,7 +235,7 @@ def delete_task(taskID):
 
 
 # Get all requests for specific employee
-# Example: /admin/requests?empID=16
+# Example: /admin/requests/16
 @admins.route("/requests/<int:empID>", methods=["GET"])
 def get_requests(empID):
     try:
@@ -248,9 +245,6 @@ def get_requests(empID):
         # Get requests details
         cursor.execute("SELECT * FROM Requests WHERE empID = %s", (empID,))
         requests = cursor.fetchall()
-
-        if not requests:
-            return jsonify({"error": "Request not found"}), 404
 
         cursor.close()
         return jsonify(requests), 200
@@ -340,12 +334,9 @@ def get_messages(empID):
                         ON mr.msgID = m.msgID
                        WHERE (mr.receiver = %s
                         OR m.sender = %s)""",
-            (empID,),
+            (empID, empID),
         )
         messages = cursor.fetchall()
-
-        if not messages:
-            return jsonify({"error": "Message not found"}), 404
 
         cursor.close()
         return jsonify(messages), 200
@@ -359,7 +350,7 @@ def get_messages(empID):
 # Required fields: content, receiver
 # Example: POST /admin/messages with JSON body
 @admins.route("/messages", methods=["POST"])
-def create_message(sender): 
+def create_message(): 
     try:
         data = request.get_json()
 
@@ -377,7 +368,7 @@ def create_message(sender):
 
         # Verify sender exists and is an employee
         cursor.execute(
-            "SELECT empID FROM Employees WHERE empID == %s", (data["sender"],)
+            "SELECT empID FROM Employees WHERE empID = %s", (data["sender"],)
         )
         if cursor.fetchone() is None:
             cursor.close()

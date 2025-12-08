@@ -100,7 +100,7 @@ def get_user_reviews(user_id):
 
         # Get all reviews for the user
         query = """
-        SELECT * FROM Reviews WHERE userId = %s
+        SELECT * FROM Reviews WHERE userID = %s
         ORDER BY publishedDate DESC
         """
         cursor.execute(query, (user_id,))
