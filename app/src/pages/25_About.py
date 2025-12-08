@@ -16,7 +16,7 @@ st.markdown(
     cinema and rate what they watch all in one platform, instead of multiple platforms.
     Users can also host watchparties with friends and family remotely across
     continents and use Advanced Search to filter movies by duration, language, genre, 
-     and actor.
+    and actor.
 
     """
 )
