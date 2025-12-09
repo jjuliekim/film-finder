@@ -24,11 +24,11 @@ if st.button('My Watchlists',
              use_container_width=True):
   st.switch_page('pages/12_Watch_Lists.py')
 
-if st.button(
-    "Advanced Search",     
-    type='primary',
-    use_container_width=True):
-    st.switch_page('pages/13_Advanced_Search.py')
+# if st.button(
+#     "Advanced Search",     
+#     type='primary',
+#     use_container_width=True):
+#     st.switch_page('pages/13_Advanced_Search.py')
 
 if st.button(
     "Advanced Film Search (Multiple Filters)",
