@@ -24,6 +24,10 @@ try:
         # The first item is the Current Active Version.
         current_version = versions_data[0]
         
+        # Use .get('versionID') based on your SQL schema
+        st.write(f"**Current Active Version: {current_version.get('version_num', 'Unknown')}**")
+        st.write(f"Deployed on {current_version.get('publishedAt', 'Unknown')}")
+        
         st.markdown("---")
         st.markdown(" #### History")
 
