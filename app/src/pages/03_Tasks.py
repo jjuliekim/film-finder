@@ -12,14 +12,14 @@ SideBarLinks()
 st.markdown(f" ## <span style='color:blue;'> Film Finder Admin </span>", unsafe_allow_html=True)
 
 st.title("Film Finder Tasks")
-API_URL = "http://api:4000/movie/admin/tasks"
+API_URL = "http://api:4000/admin/tasks/11"
 
 with st.form("new_task"):
     desc = st.text_input("New Task Description")
     if st.form_submit_button("Add Task"):
         if desc:
             # We send empID: 1 just to make the database happy
-            requests.post(API_URL, json={"empID": 1, "description": desc})
+            requests.post(API_URL, json={"empID": 11, "description": desc})
             st.success("Task Added!")
             st.rerun()
 
