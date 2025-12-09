@@ -399,7 +399,7 @@ def get_watch_party(party_id):
 # Example: POST /user/watchparties with JSON body
 @users.route("/watchparties", methods=["POST"])
 def create_watch_party():
-    try:
+    try: 
         current_app.logger.info("Starting create_watch_party request")
         data = request.get_json()
 

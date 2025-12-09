@@ -13,9 +13,9 @@ if "my_reviews" not in st.session_state:
     # Each review: {"film": str, "review": str, "stars": int, "share_link": str}
     st.session_state.my_reviews = []
 
-# -------------------------
+
 # Add a new review
-# -------------------------
+
 st.write("### Write a New Review")
 film_name = st.text_input("Film Title")
 review_text = st.text_area("Your Review")
@@ -25,11 +25,11 @@ if st.button("Submit Review"):
     if film_name.strip() == "" or review_text.strip() == "":
         st.error("Please enter both a film title and review text.")
     else:
-        # Generate share link
+        # make share link
         review_id = random.randint(100000, 999999)
         share_link = f"https://filmfinder.com/review/{review_id}"
 
-        # Append to session state
+        
         st.session_state.my_reviews.append({
             "film": film_name.strip(),
             "review": review_text.strip(),
@@ -38,9 +38,9 @@ if st.button("Submit Review"):
         })
         st.success(f"Review for '{film_name}' submitted!")
 
-# -------------------------
-# Display all reviews
-# -------------------------
+
+# show all reviews
+
 st.write("---")
 st.write("### My Published Reviews")
 

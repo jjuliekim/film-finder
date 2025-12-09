@@ -16,7 +16,7 @@ profile_type = st.selectbox(
 )
 
 profile_name = st.text_input("Enter Profile Name")
-# Start the watchparty Button
+
 if st.button("Create Profile"):
     if profile_name.strip() == "":
         st.error("Please enter a profile name.")
