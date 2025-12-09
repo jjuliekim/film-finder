@@ -77,8 +77,10 @@ def Reviews(): #user story 3.1 + 3.5
 def WatchLists(): #user story 3.2 + 3.3
     st.sidebar.page_link("pages/12_Watch_Lists.py", label="My Watch Lists", icon="📋")
 
+def MovieDetails():
+    st.sidebar.page_link("pages/20_Movie_Details.py", label="Movie Search", icon="🎬")
 
-def MoviesSearch(): #user story 3.4 + 3.6
+def AdvancedSearch(): #user story 3.4
     st.sidebar.page_link("pages/18_Advanced_Search.py", label="Advanced Search", icon="🔎")
 
 def Logout():
@@ -155,8 +157,8 @@ def SideBarLinks(show_home=False):
             Reviews()
             WatchLists()
             Logout()
-    
-
+            MovieDetails()
+            AdvancedSearch()
 
         # If the user role is usaid worker, show the Api Testing page
         if st.session_state["role"] == "bilingual_me":
