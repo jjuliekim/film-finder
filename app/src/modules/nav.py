@@ -132,7 +132,7 @@ def SideBarLinks(show_home=False):
     # Show the other page navigators depending on the users' role.
     if st.session_state["authenticated"]:
 
-        # Show World Bank Link and Map Demo Link if the user is a political strategy advisor role.
+        # User persona 1: system admin
         if st.session_state["role"] == "system_administrator":
             SysAdminHomeNav()
             AppVersHistory()
@@ -141,8 +141,7 @@ def SideBarLinks(show_home=False):
             DirectMessage()
             Logout()
 
-
-        # If the user role is usaid worker, show the Api Testing page
+        # User persona 2: data analyst
         if st.session_state["role"] == "data_analyst":
             DataAnalystHomeNav()
             SearchMediaNav()
@@ -151,16 +150,16 @@ def SideBarLinks(show_home=False):
             DirectMessage2()
             Logout()
 
-        # If the user role is usaid worker, show the Api Testing page
+        # User persona 3: movie critic
         if st.session_state["role"] == "movie_critic":
             MovieCriticHomeNav()
             Reviews()
             WatchLists()
-            Logout()
             MovieDetails()
             AdvancedSearch()
+            Logout()
 
-        # If the user role is usaid worker, show the Api Testing page
+        # User persona 4: bilingual movie enthusiast
         if st.session_state["role"] == "bilingual_me":
             BilingualMEHomeNav()
             FindFilmRecs()
