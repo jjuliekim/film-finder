@@ -1,11 +1,13 @@
 import streamlit as st
 import requests
 from datetime import date
+import random
 
 st.set_page_config(layout="wide")
 st.title("Watch Party")
 
 st.write("### Start a Watch Party")
+
 
 # Step 1: Get movie list from backend
 @st.cache_data
@@ -21,17 +23,29 @@ def fetch_movies():
 
 movies = fetch_movies()
 
-# Convert movie data into dropdown format
-movie_options = {movie["Title"]: movie["movieID"] for movie in movies}
 
-selected_title = st.selectbox("Choose a Movie", list(movie_options.keys()))
+option = st.selectbox(
+    "Choose a movie",
+    [movie["title"] for movie in movies],
+)
+
+st.write("You selected:", option)
+
+
+# # Convert movie data into dropdown format
+# movie_options = {movie["Title"]: movie["movieID"] for movie in movies}
+
+# selected_title = st.selectbox("Choose a Movie", list(movie_options.keys()))
 
 party_date = st.date_input("Party Date", value=date.today())
+
+party_id = random.randint(100000, 999999)
+watchparty_link = f"https://filmfinder.com/watchparty/{party_id}"
 
 # Start watch party
 if st.button("Start Watch Party"):
 
-    movie_id = movie_options[selected_title]
+    movie_id = movies[option]
 
     payload = {
         "movieID": movie_id,
@@ -54,6 +68,9 @@ if st.button("Start Watch Party"):
 
     except Exception as e:
         st.error(f"Error creating watch party: {e}")
+
+    
+
 
 
 # import streamlit as st

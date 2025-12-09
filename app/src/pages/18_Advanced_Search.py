@@ -98,7 +98,7 @@ if apply_filters:
 if selected_movie != "Any" and st.button("Get Directors"):
     movie_id = movie_map[selected_movie]
     try:
-        url = f"http://api:4000/movies/movies/{movie_id}/directors"
+        url = f"http://api:4000/movie/movies/{movie_id}/directors"
         response = requests.get(url)
         response.raise_for_status()
         directors = response.json()

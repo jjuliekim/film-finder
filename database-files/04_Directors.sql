@@ -29,3 +29,4 @@ insert into Directors (directorID, firstName, lastName) values (27, 'Maurise', '
 insert into Directors (directorID, firstName, lastName) values (28, 'Giordano', 'Lomath');
 insert into Directors (directorID, firstName, lastName) values (29, 'Micheal', 'Staker');
 insert into Directors (directorID, firstName, lastName) values (30, 'Sheela', 'Warratt');
+insert into Directors (directorID, firstName, lastName) values (31, 'Patrick', 'Warratt');
