@@ -9,7 +9,7 @@ from modules.nav import SideBarLinks
 SideBarLinks()
 
 # 2. Page Configuration
-st.title("💾 Filter & Annotate")
+st.title(" Filter & Annotate")
 st.caption("Define complex search filters and save them with analysis notes.")
 
 # 3. Initialize Session State for Saved Searches
