@@ -9,17 +9,11 @@ SideBarLinks()
 st.title("📝 My Film Reviews")
 st.write("Write, view, and manage your film reviews with star ratings.")
 
-# Initialize session state for reviews
 if "my_reviews" not in st.session_state:
-    # Each review: {"film": str, "review": str, "stars": int, "share_link": str}
     st.session_state.my_reviews = []
 user_id = st.session_state['userID']
 
-# -------------------------
-# Add a new review
-# -------------------------
 st.write("### Write a New Review")
-# Get list of movies
 try:
     movies_response = requests.get('http://api:4000/movie/movies')
     movies_response.raise_for_status()
@@ -30,7 +24,6 @@ except Exception as e:
     movie_options = {}
 selected_movie = st.selectbox("Select a Film", list(movie_options.keys()))
 movie_id = movie_options[selected_movie]
-# Input review details
 review_text = st.text_area("Your Review")
 star_rating = st.number_input("Star Rating (1-5)", min_value=1, max_value=5, step=1)
 
@@ -51,9 +44,6 @@ if st.button("Submit Review"):
         st.success("Review saved!")
         st.rerun()
 
-# -------------------------
-# Display all reviews
-# -------------------------
 st.write("---")
 st.write("### My Published Reviews")
 
@@ -64,7 +54,6 @@ user_reviews = reviews_response.json()
 if user_reviews:
     for review in user_reviews:
         col1, col2 = st.columns([6, 2])
-        # Get info
         try:
             movie_response = requests.get(f'http://api:4000/movie/movies/{review["movieID"]}')
             movie_response.raise_for_status()
@@ -75,7 +64,6 @@ if user_reviews:
         except:
             display_title = f"Movie ID: {review['movieID']}"
             
-        # Display review
         with col1:
             st.write(f"**{display_title}** ({review['starRating']} ⭐)")
             st.write(f"{review['reviewText']}")

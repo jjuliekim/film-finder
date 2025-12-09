@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 
-# import mysql.connector
 from modules.nav import SideBarLinks
 
 st.set_page_config(layout="wide")
@@ -10,7 +9,6 @@ SideBarLinks()
 st.title("Find Film Recommendations")
 st.write("")
 
-# 1. Map Genre Names to IDs (These must match your DB IDs)
 genre_map = {
     "Mystery": 1,
     "Comedy": 2,
@@ -41,14 +39,11 @@ genre_map = {
 
 genre_selection = st.selectbox("Select a Genre", list(genre_map.keys()))
 
-# 2. Get the numeric ID from the selection
 genre_id = genre_map[genre_selection]
 
 st.write("# Getting you the top movies for your genre!")
 
 if st.button("Get Movies"):
-    # 3. Use an f-string to put the number into the URL
-    # We keep 'http://api:4000' as requested
     url = f"http://api:4000/movie/genres/{genre_id}/movies"
 
     try:

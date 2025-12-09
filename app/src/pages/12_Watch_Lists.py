@@ -5,13 +5,11 @@ from modules.nav import SideBarLinks
 st.set_page_config(layout="wide")
 SideBarLinks()
 
-st.title("🎬 Personal Film Lists")
+st.title("Personal Film Lists")
 st.write("Manage your watched, to-watch, and rated movies easily.")
 
-# Initialize session state for lists
 user_id = st.session_state["userID"]
 
-# Create a new watchlist
 st.write("### Create a New Watchlist")
 new_list_name = st.text_input("New Watchlist Name")
 if st.button("Create Watchlist"):
@@ -93,7 +91,6 @@ if user_lists:
                 except Exception as e:
                     st.error(f"Error deleting list: {e}")
                     
-        # Get and display movies in this list
         try:
             list_movies_response = requests.get(f"http://api:4000/user/lists/{list_id}/movies")
             list_movies_response.raise_for_status()

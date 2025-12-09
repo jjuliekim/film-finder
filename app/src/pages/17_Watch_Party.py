@@ -16,7 +16,7 @@ movie_name = st.text_input("Enter Movie Name")
 party_id = random.randint(100000, 999999)
 watchparty_link = f"https://filmfinder.com/watchparty/{party_id}"
 
-# Movie section
+
 st.write("### Movie")
 st.write(movie_name)
 
