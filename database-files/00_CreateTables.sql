@@ -155,7 +155,7 @@ CREATE TABLE MovieLists (
 
 DROP TABLE IF EXISTS Captions; -- WEAK ENTITY of Movies
 CREATE TABLE Captions(
-    lang VARCHAR(3), -- partial key
+    lang VARCHAR(20), -- partial key
     movieID INT , -- fk to Movies
     captionText CHAR(255),
     PRIMARY KEY (lang, movieID), -- composite key
