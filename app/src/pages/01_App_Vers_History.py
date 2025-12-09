@@ -7,11 +7,12 @@ logger = logging.getLogger(__name__)
 
 SideBarLinks()
 
-st.markdown(f" ## <span style='color:blue;'> Film Finder Admin </span>", unsafe_allow_html=True)
+st.markdown(
+    f" ## <span style='color:blue;'> Film Finder Admin </span>", unsafe_allow_html=True
+)
 st.markdown(" #### App Versions")
 
-# Base URL for the versions endpoint
-BASE_URL = 'http://api:4000/employee/versions'
+url = "http://api:4000/employee/versions"
 
 try:
     # 1. Fetch all versions to display
@@ -23,38 +24,29 @@ try:
         # The first item is the Current Active Version.
         current_version = versions_data[0]
         
-        st.write(f"**Current Active Version: {current_version.get('version_num', 'Unknown')}**")
-        st.write(f"Deployed on {current_version.get('publishedAt', 'Unknown')}")
-        
         st.markdown("---")
         st.markdown(" #### History")
 
-        # Loop through the rest of the versions (History)
-        for v in versions_data[1:]:
+        for v in versions_data[0:]:
             col1, col2 = st.columns([3, 1])
-            
+
             with col1:
-                version_info = f"**{v.get('version_num')}**:  \nDeployed on {v.get('publishedAt')}"
+                version_info = f"**Version {v.get('versionID')}**:  \nPublished on {v.get('publishedAt')}  \n_{v.get('description', 'No description')}_"
                 st.write(version_info)
-            
+
             with col2:
-                # Button unique key using versionID
-                if st.button("Restore", key=f"restore_{v.get('versionID')}"):
-                    # 2. Logic to restore specific version
-                    restore_url = f"{BASE_URL}/{v.get('versionID')}"
-                    
+                version_id = v.get("versionID")
+                if st.button("Restore", key=f"restore_{version_id}"):
                     try:
+                        restore_url = f"http://api:4000/employee/versions/{version_id}"
                         restore_response = requests.put(restore_url)
                         restore_response.raise_for_status()
-                        
-                        st.success(f"Successfully restored version {v.get('version_num')}!")
-                        
-                        # Rerun the app to refresh the list and show the new 'Current' version
+
+                        st.success(f"Successfully restored version {version_id}!")
                         st.rerun()
-                        
-                    except Exception as e:
-                        st.error(f"Failed to restore: {e}")
-            
+                    except Exception as restore_error:
+                        st.error(f"Error restoring version: {restore_error}")
+
             st.divider()
 
     else:
