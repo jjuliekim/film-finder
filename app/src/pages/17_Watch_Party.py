@@ -22,7 +22,6 @@ st.write(movie_name)
 
 # Watchparty link 
 st.write("### Watchparty Link")
-st.code(watchparty_link)
 
 # Share invite Button
 if st.button("Share Invite Link"):
