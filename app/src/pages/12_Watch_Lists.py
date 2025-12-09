@@ -7,7 +7,7 @@ SideBarLinks()
 st.title("🎬 Personal Film Lists") 
 st.write("Manage your watched, to-watch, and rated movies easily.")
 
-# Initialize session state for lists
+# Create sample lists
 if "film_lists" not in st.session_state:
     st.session_state.film_lists = {
         "Watched": [],
@@ -43,7 +43,6 @@ if st.button("Add Film"):
 
 
 # show curr lists
-
 st.write("---")
 st.write("### Your Film Lists")
 
