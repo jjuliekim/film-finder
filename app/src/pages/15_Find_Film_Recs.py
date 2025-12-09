@@ -34,7 +34,7 @@ if st.button("Get Movies"):
     
     try:
         response = requests.get(url)
-        response.raise_for_status() # Check for errors
+        response.raise_for_status() 
         movies_genres = response.json()
         st.dataframe(movies_genres)
     except Exception as e:
