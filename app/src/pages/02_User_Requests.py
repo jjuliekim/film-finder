@@ -1,50 +1,80 @@
 import logging
-logger = logging.getLogger(__name__)
-
 import streamlit as st
+import requests
+import pandas as pd
 from modules.nav import SideBarLinks
 
-# Call the SideBarLinks from the nav module in the modules directory
+logger = logging.getLogger(__name__)
+
 SideBarLinks()
 
-# set the header of the page
 st.markdown(f" ## <span style='color:blue;'> Film Finder Admin </span>", unsafe_allow_html=True)
-# st.subheader('Currently deployed version and past versions')
 
-# You can access the session state to make a more customized/personalized app experience
-#st.write(f"### Hi, {st.session_state['first_name']}!")
+BASE_URL = "http://api:4000/admin/requests"
 
-import logging
-logger = logging.getLogger(__name__)
-import pandas as pd
-import streamlit as st
-from modules.nav import SideBarLinks
+current_emp_id = st.session_state.get('empID', 16)
+first_name = st.session_state.get('first_name', 'Employee')
 
-# set the header of the page
-st.markdown(' ### User Requests Data')
+st.markdown(f"### {first_name}'s Requests")
 
-#mock data 
-#match to er diagram
-data = {
-    'Request ID': [101, 102, 103, 104],
-    'User': ['dhruvi@gmail.com', 'yasmin@icloud.com', 'emma@hotmail.com', 'julie@gmail.com'],
-    'Feature Requested': ['Request Database', 'Export to PDF', 'More Movie Genres', 'Fix Login Bug'],
-    'Status': ['Pending', 'In Progress', 'Pending', 'Completed'],
-    'Date Submitted': ['2025-11-01', '2025-11-02', '2025-11-03', '2025-11-05']
-}
+try:
+    get_url = f"{BASE_URL}/{current_emp_id}"
+    response = requests.get(get_url)
+    
+    if response.status_code == 200:
+        requests_data = response.json()
+    else:
+        requests_data = []
 
-# dictionary to DataFrame
-df = pd.DataFrame(data)
-with st.echo(code_location='above'):
-    st.dataframe(
-        df,
-        use_container_width=True,
-        hide_index=False,
-    )
+    if requests_data:
+        df = pd.DataFrame(requests_data)
+        
+        st.subheader("Summary")
+        if 'status' in df.columns:
+            st.table(df['status'].value_counts())
+        
+        st.markdown("### Request List")
 
-# Summary
-st.subheader("Summary")
-with st.echo(code_location='above'):
-    # breakdown of requests by status
-    df1 = df['Status'].value_counts()
-    st.table(df1)
+        for req in requests_data:
+            r_id = req.get('requestID')
+            msg = req.get('message')
+            status = req.get('status')
+            timestamp = req.get('timestamp')
+            user_id = req.get('userID')
+            
+            col1, col2, col3 = st.columns([3, 1, 1.5])
+            
+            with col1:
+                st.write(f"**From User ID: {user_id}**")
+                st.write(f"\"{msg}\"")
+                st.caption(f"Time: {timestamp}")
+            
+            with col2:
+                if status == 'resolved':
+                    st.success("Resolved")
+                else:
+                    st.warning(f"Status: {status}")
+            
+            with col3:
+                if status != 'resolved':
+                    if st.button("Mark Resolved", key=f"resolve_{r_id}"):
+                        update_url = f"{BASE_URL}/{r_id}"
+                        update_payload = {"status": "resolved"}
+                        
+                        try:
+                            r = requests.put(update_url, json=update_payload)
+                            r.raise_for_status()
+                            st.success("Request resolved!")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Could not update: {e}")
+                else:
+                    st.write("No actions available")
+
+            st.divider()
+            
+    else:
+        st.info("No requests found for this employee.")
+
+except Exception as e:
+    st.error(f"Connection Error: {e}")
