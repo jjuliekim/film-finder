@@ -11,7 +11,7 @@ st.markdown(f" ## <span style='color:blue;'> Film Finder Admin </span>", unsafe_
 st.markdown(" #### App Versions")
 
 # Base URL for the versions endpoint
-BASE_URL = 'http://api:4000/employee/versions/6'
+BASE_URL = 'http://api:4000/employee/versions'
 
 try:
     response = requests.get(BASE_URL)

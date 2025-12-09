@@ -10,7 +10,9 @@ SideBarLinks()
 
 st.markdown(f" ## <span style='color:blue;'> Film Finder Admin </span>", unsafe_allow_html=True)
 
-BASE_URL = "http://api:4000/admin/admin/requests"
+BASE_URL = "http://api:4000/admin/requests"
+
+emp_id = 16
 
 current_emp_id = st.session_state.get('empID', 16)
 first_name = st.session_state.get('first_name', 'Employee')

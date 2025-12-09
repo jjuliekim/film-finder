@@ -36,6 +36,9 @@ def Tasks(): #user story 1.4 + 1.5
 def DirectMessage(): #user story 1.6
     st.sidebar.page_link("pages/04_Direct_Message.py", label="Direct Messsage", icon="💬")
 
+def Logout():
+    st.sidebar.page_link("Home.py", label="Logout", icon="👤")
+
 
 
 ## ------------------------ Role of data_analyst ------------------------
@@ -57,7 +60,8 @@ def MovieAnalytics(): #user story 2.3 + 2.5
 def DirectMessage2(): #user story 2.6
     st.sidebar.page_link("pages/09_Direct_Message-2.py", label="Direct Message", icon="💬")
 
-
+def Logout():
+    st.sidebar.page_link("Home.py", label="Logout", icon="👤")
 
 
 
@@ -76,6 +80,9 @@ def WatchLists(): #user story 3.2 + 3.3
 
 def MoviesSearch(): #user story 3.4 + 3.6
     st.sidebar.page_link("pages/18_Advanced_Search.py", label="Advanced Search", icon="🔎")
+
+def Logout():
+    st.sidebar.page_link("Home.py", label="Logout", icon="👤")
 
 #### ------------------------ Bilingual Movie Enthusiast  ------------------------
 def BilingualMEHomeNav(): 
@@ -97,6 +104,9 @@ def AdvancedSearch(): #user story 4.6
 
 def AddKids(): #user story 4.6
     st.sidebar.page_link("pages/19_Kids_Prof.py", label="Add Profiles", icon="➕")
+
+def Logout():
+    st.sidebar.page_link("Home.py", label="Logout", icon="👤")
 
     # --------------------------------Links Function -----------------------------------------------
 def SideBarLinks(show_home=False):
@@ -127,6 +137,7 @@ def SideBarLinks(show_home=False):
             UserRequests()
             Tasks()
             DirectMessage()
+            Logout()
 
 
         # If the user role is usaid worker, show the Api Testing page
@@ -136,12 +147,14 @@ def SideBarLinks(show_home=False):
             UserData()
             MovieAnalytics()
             DirectMessage2()
+            Logout()
 
         # If the user role is usaid worker, show the Api Testing page
         if st.session_state["role"] == "movie_critic":
             MovieCriticHomeNav()
             Reviews()
             WatchLists()
+            Logout()
     
 
 
@@ -151,4 +164,5 @@ def SideBarLinks(show_home=False):
             FindFilmRecs()
             WatchParty()
             AdvancedSearch()
+            Logout()
 
