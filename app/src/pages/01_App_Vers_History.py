@@ -25,7 +25,7 @@ try:
         st.markdown("---")
         st.markdown("### History")
 
-        # Loop through the rest of the versions (History)
+        # Loop through the rest of the versions
         for v in versions_data[1:]:
             col1, col2 = st.columns([3, 1])
             
