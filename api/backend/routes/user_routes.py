@@ -203,7 +203,9 @@ def delete_list(list_id):
         cursor.execute("SELECT * FROM Lists WHERE listID = %s", (list_id,))
         if not cursor.fetchone():
             return jsonify({"error": "List not found"}), 404
-
+          
+        # Delete all movies from this list
+        cursor.execute("DELETE FROM MovieLists WHERE listID = %s", (list_id,))
         # Delete list
         query = "DELETE FROM Lists WHERE listID = %s"
         cursor.execute(query, (list_id,))
@@ -292,7 +294,7 @@ def add_movie_to_list(list_id):
 
         # Insert movie into list
         query = """
-        INSERT INTO ListMovies (listID, movieID)
+        INSERT INTO MovieLists (listID, movieID)
         VALUES (%s, %s)
         """
         cursor.execute(
@@ -334,7 +336,7 @@ def remove_movie_from_list(list_id, movie_id):
             return jsonify({"error": "Movie not found"}), 404
 
         # Delete movie from list
-        query = "DELETE FROM ListMovies WHERE listID = %s AND movieID = %s"
+        query = "DELETE FROM MovieLists WHERE listID = %s AND movieID = %s"
         cursor.execute(query, (list_id, movie_id))
         db.get_db().commit()
         cursor.close()
@@ -346,6 +348,38 @@ def remove_movie_from_list(list_id, movie_id):
     except Error as e:
         current_app.logger.error(f"Error removing movie from list: {str(e)}")
         return jsonify({"error": str(e)}), 500
+      
+      
+# Get all movies in a specific list
+# Example: /user/lists/1/movies
+@users.route("/lists/<int:list_id>/movies", methods=["GET"])
+def get_movies_list(list_id):
+    try:
+        current_app.logger.info(
+            f"Starting get_movies_in_list request for list ID: {list_id}"
+        )
+        cursor = db.get_db().cursor()
+
+        # Check if list exists
+        cursor.execute("SELECT * FROM Lists WHERE listID = %s", (list_id,))
+        if not cursor.fetchone():
+            return jsonify({"error": "List not found"}), 404
+
+        # Get all movies in the list
+        query = """
+        SELECT m.* FROM Movies m
+        JOIN MovieLists ml ON ml.movieID = m.movieID
+        WHERE ml.listID = %s
+        """
+        cursor.execute(query, (list_id,))
+        movies = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f"Retrieved movies for list ID: {list_id}")
+        return jsonify(movies), 200
+    except Error as e:
+        current_app.logger.error(f"Error retrieving movies in list: {str(e)}")
+        return jsonify({"error": str(e)}), 500  
 
 
 # Get details of a specific watch party
