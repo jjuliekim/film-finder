@@ -11,7 +11,7 @@ st.write("### Start a Watch Party")
 @st.cache_data
 def fetch_movies():
     try:
-        url = "http://api:4000/movies"  # replace with your actual route
+        url = "http://api:4000/movie/movies" 
         r = requests.get(url)
         r.raise_for_status()
         return r.json()
@@ -36,7 +36,7 @@ if st.button("Start Watch Party"):
     payload = {
         "movieID": movie_id,
         "partyDate": str(party_date),
-        "userIDs": [1]    # required by backend, but no login logic
+        "userIDs": [1]   
     }
 
     try:
